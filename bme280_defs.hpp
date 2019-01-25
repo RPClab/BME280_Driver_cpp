@@ -300,13 +300,6 @@ protected:
     std::string m_interfaceName{""};
 };
 
-/*!
- * @brief bme280 device structure
- */
-class bme280_dev {
-public:
-};
-
 class I2C : public IO
 {
 public:
