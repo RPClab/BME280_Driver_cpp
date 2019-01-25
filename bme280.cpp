@@ -433,7 +433,7 @@ int8_t bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8_t len, 
 	/* Check for null pointer in the device structure*/
 	rslt = null_ptr_check(dev);
 	/* Check for arguments validity */
-	if ((rslt ==  BME280_OK) && (reg_addr != NULL) && (reg_data != NULL)) {
+	if ((rslt ==  BME280_OK) && (reg_addr != nullptr) && (reg_data != nullptr)) {
 		if (len != 0) {
 			temp_buff[0] = reg_data[0];
 			/* If interface selected is SPI */
@@ -601,7 +601,7 @@ int8_t bme280_get_sensor_data(uint8_t sensor_comp, struct bme280_data *comp_data
 	/* Check for null pointer in the device structure*/
 	rslt = null_ptr_check(dev);
 
-	if ((rslt == BME280_OK) && (comp_data != NULL)) {
+	if ((rslt == BME280_OK) && (comp_data != nullptr)) {
 		/* Read the pressure and temperature data from the sensor */
 		rslt = bme280_get_regs(BME280_DATA_ADDR, reg_data, BME280_P_T_H_DATA_LEN, dev);
 
@@ -659,7 +659,7 @@ int8_t bme280_compensate_data(uint8_t sensor_comp, const struct bme280_uncomp_da
 {
 	int8_t rslt = BME280_OK;
 
-	if ((uncomp_data != NULL) && (comp_data != NULL) && (calib_data != NULL)) {
+	if ((uncomp_data != nullptr) && (comp_data != nullptr) && (calib_data != nullptr)) {
 		/* Initialize to zero */
 		comp_data->temperature = 0;
 		comp_data->pressure = 0;
@@ -1267,7 +1267,7 @@ static int8_t null_ptr_check(const struct bme280_dev *dev)
 {
 	int8_t rslt;
 
-	if ((dev == NULL) || (dev->m_IO == NULL)) {
+	if ((dev == nullptr) || (dev->m_IO == nullptr)) {
 		/* Device structure pointer is not valid */
 		rslt = BME280_E_NULL_PTR;
 	} else {

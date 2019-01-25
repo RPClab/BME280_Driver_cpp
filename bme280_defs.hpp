@@ -99,16 +99,6 @@
 
 /**@}*/
 
-/**\name C standard macros */
-#ifndef NULL
-#ifdef __cplusplus
-#define NULL   0
-#else
-#define NULL   ((void *) 0)
-#endif
-#endif
-/********************************************************/
-
 #ifndef BME280_FLOAT_ENABLE
 /* #define BME280_FLOAT_ENABLE */
 #endif
@@ -360,7 +350,7 @@ public:
 	uint8_t dev_id;
 	/*! SPI/I2C interface */
 	enum bme280_intf intf;
-    IO* m_IO{NULL};
+    IO* m_IO{nullptr};
 	/*! Trim data */
 	struct bme280_calib_data calib_data;
 	/*! Sensor settings */
