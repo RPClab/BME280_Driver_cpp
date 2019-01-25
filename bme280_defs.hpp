@@ -322,7 +322,6 @@ public:
 	struct bme280_settings settings;
 };
 
-
 class I2C : public IO
 {
 public:
