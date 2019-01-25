@@ -208,7 +208,7 @@ enum bme280_intf {
 
 #include <chrono>
 #include <thread>
-void delay_ms(uint32_t period);
+
 /*!
  * @brief Calibration data
  */

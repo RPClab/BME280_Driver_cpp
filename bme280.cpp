@@ -50,7 +50,7 @@
 #include "bme280.hpp"
 
 
-void delay_ms(uint32_t period)
+void bme280::delay_ms(uint32_t period)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(period));
 }

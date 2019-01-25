@@ -60,6 +60,7 @@
 class bme280
 {
 public:
+    void delay_ms(uint32_t period);
     /*!
     *  @brief This API is the entry point.
     *  It reads the chip-id and calibration data from the sensor.

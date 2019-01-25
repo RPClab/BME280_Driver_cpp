@@ -44,7 +44,7 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
   while (1) {
     rslt = bm.bme280_set_sensor_mode(BME280_FORCED_MODE, &bm.m_dev);
     /* Wait for the measurement to complete and print data @25Hz */
-    delay_ms(40);
+    bm.delay_ms(40);
     rslt = bm.bme280_get_sensor_data(BME280_ALL, &comp_data, &bm.m_dev);
     print_sensor_data(&comp_data);
   }
