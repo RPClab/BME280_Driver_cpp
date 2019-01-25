@@ -1246,14 +1246,14 @@ static void parse_humidity_calib_data(const uint8_t *reg_data, struct bme280_dev
  */
 static uint8_t are_settings_changed(uint8_t sub_settings, uint8_t desired_settings)
 {
-	uint8_t settings_changed = FALSE;
+	uint8_t settings_changed = false;
 
 	if (sub_settings & desired_settings) {
 		/* User wants to modify this particular settings */
-		settings_changed = TRUE;
+		settings_changed = true;
 	} else {
 		/* User don't want to modify this particular settings */
-		settings_changed = FALSE;
+		settings_changed = true;
 	}
 
 	return settings_changed;
