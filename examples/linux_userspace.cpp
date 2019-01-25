@@ -14,11 +14,6 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-void user_delay_ms(uint32_t period)
-{
-  usleep(period*1000);
-}
-
 void print_sensor_data(struct bme280_data *comp_data)
 {
 #ifdef BME280_FLOAT_ENABLE
@@ -49,7 +44,7 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
   while (1) {
     rslt = bme280_set_sensor_mode(BME280_FORCED_MODE, dev);
     /* Wait for the measurement to complete and print data @25Hz */
-    dev->delay_ms(40);
+    delay_ms(40);
     rslt = bme280_get_sensor_data(BME280_ALL, &comp_data, dev);
     print_sensor_data(&comp_data);
   }
@@ -65,7 +60,6 @@ int main(int argc, char* argv[])
   int8_t rslt = BME280_OK;
   dev.dev_id = BME280_I2C_ADDR_PRIM;
   dev.intf = BME280_I2C_INTF;
-  dev.delay_ms = user_delay_ms;
 
   rslt = bme280_init(&dev);
   stream_sensor_data_forced_mode(&dev);

@@ -251,14 +251,9 @@ enum bme280_intf {
 	BME280_I2C_INTF
 };
 
-/*!
- * @brief Type definitions
- */
-typedef int8_t (*bme280_com_fptr_t)(uint8_t dev_id, uint8_t reg_addr,
-		uint8_t *data, uint16_t len);
-
-typedef void (*bme280_delay_fptr_t)(uint32_t period);
-
+#include <chrono>
+#include <thread>
+void delay_ms(uint32_t period);
 /*!
  * @brief Calibration data
  */
@@ -362,8 +357,6 @@ struct bme280_dev {
 	/*! SPI/I2C interface */
 	enum bme280_intf intf;
     IO* m_IO{NULL};
-	/*! Delay function pointer */
-	bme280_delay_fptr_t delay_ms;
 	/*! Trim data */
 	struct bme280_calib_data calib_data;
 	/*! Sensor settings */

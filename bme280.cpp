@@ -49,6 +49,12 @@
     @brief Sensor driver for BME280 sensor */
 #include "bme280.hpp"
 
+
+void delay_ms(uint32_t period)
+{
+    std::this_thread::sleep_for(std::chrono::milliseconds(period));
+}
+
 /**\name Internal macros */
 /* To identify osr settings selected by user */
 #define OVERSAMPLING_SETTINGS		UINT8_C(0x07)
@@ -374,7 +380,7 @@ int8_t bme280_init(struct bme280_dev *dev)
 				break;
 			}
 			/* Wait for 1 ms */
-			dev->delay_ms(1);
+			delay_ms(1);
 			--try_count;
 		}
 		/* Chip id check failed */
@@ -573,7 +579,7 @@ int8_t bme280_soft_reset(const struct bme280_dev *dev)
 		/* Write the soft reset command in the sensor */
 		rslt = bme280_set_regs(&reg_addr, &soft_rst_cmd, 1, dev);
 		/* As per data sheet, startup time is 2 ms. */
-		dev->delay_ms(2);
+		delay_ms(2);
 	}
 
 	return rslt;
@@ -1261,7 +1267,7 @@ static int8_t null_ptr_check(const struct bme280_dev *dev)
 {
 	int8_t rslt;
 
-	if ((dev == NULL) || (dev->m_IO == NULL) || (dev->delay_ms == NULL)) {
+	if ((dev == NULL) || (dev->m_IO == NULL)) {
 		/* Device structure pointer is not valid */
 		rslt = BME280_E_NULL_PTR;
 	} else {
