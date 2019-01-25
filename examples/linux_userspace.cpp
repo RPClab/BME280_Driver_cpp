@@ -59,7 +59,6 @@ int main(int argc, char* argv[])
   //struct bme280_dev dev;
   bm.m_dev.m_IO=&i2c;
   int8_t rslt = BME280_OK;
-  bm.m_dev.dev_id = BME280_I2C_ADDR_PRIM;
   bm.m_dev.intf = BME280_I2C_INTF;
 
   rslt = bm.bme280_init(&bm.m_dev);

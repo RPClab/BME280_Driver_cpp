@@ -234,6 +234,10 @@ public:
                         struct bme280_data *comp_data, struct bme280_calib_data *calib_data);
     bme280_dev m_dev;
 private:
+    
+    /*! Chip Id */
+	uint8_t m_chip_id;
+    
     /*!
     * @brief This internal API puts the device to sleep mode.
     *

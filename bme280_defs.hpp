@@ -299,8 +299,8 @@ public:
 class IO
 {
 public:
-    virtual int8_t read(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
-    virtual int8_t write(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
+    virtual int8_t read(uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
+    virtual int8_t write(uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
     virtual ~IO(){};
 };
 
@@ -309,10 +309,6 @@ public:
  */
 class bme280_dev {
 public:
-	/*! Chip Id */
-	uint8_t chip_id;
-	/*! Device Id */
-	uint8_t dev_id;
 	/*! SPI/I2C interface */
 	enum bme280_intf intf;
     IO* m_IO{nullptr};
@@ -329,13 +325,13 @@ public:
     {
 	m_adress=static_cast<uint8_t>(std::stoi(adress,0,16));
     };
-    virtual int8_t read(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)
+    virtual int8_t read(uint8_t reg_addr,uint8_t *data, uint16_t len)
     {
         ::write(m_fd, &reg_addr,1);
         ::read(m_fd, data, len);
         return 0; 
     }
-    virtual int8_t write(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)
+    virtual int8_t write(uint8_t reg_addr,uint8_t *data, uint16_t len)
     {
         int8_t *buf;
         buf =static_cast<int8_t*>(malloc(len +1));

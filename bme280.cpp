@@ -84,7 +84,7 @@ int8_t bme280::bme280_init(struct bme280_dev *dev)
 			rslt = bme280_get_regs(BME280_CHIP_ID_ADDR, &chip_id, 1, dev);
 			/* Check for chip id validity */
 			if ((rslt == BME280_OK) && (chip_id == BME280_CHIP_ID)) {
-				dev->chip_id = chip_id;
+				m_chip_id = chip_id;
 				/* Reset the sensor */
 				rslt = bme280_soft_reset(dev);
 				if (rslt == BME280_OK) {
@@ -120,7 +120,7 @@ int8_t bme280::bme280_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len
 		if (dev->intf != BME280_I2C_INTF)
 			reg_addr = reg_addr | 0x80;
 		/* Read the data  */
-		rslt = dev->m_IO->read(dev->dev_id, reg_addr, reg_data, len);
+		rslt = dev->m_IO->read(reg_addr, reg_data, len);
 		/* Check for communication error */
 		if (rslt != BME280_OK)
 			rslt = BME280_E_COMM_FAIL;
@@ -164,7 +164,7 @@ int8_t bme280::bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8
 			} else {
 				temp_len = len;
 			}
-			rslt = dev->m_IO->write(dev->dev_id, reg_addr[0], temp_buff, temp_len);
+			rslt = dev->m_IO->write(reg_addr[0], temp_buff, temp_len);
 			/* Check for communication error */
 			if (rslt != BME280_OK)
 				rslt = BME280_E_COMM_FAIL;
