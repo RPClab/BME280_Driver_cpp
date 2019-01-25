@@ -896,11 +896,11 @@ static double compensate_temperature(const struct bme280_uncomp_data *uncomp_dat
 	double temperature_min = -40;
 	double temperature_max = 85;
 
-	var1 = ((double)uncomp_data->temperature) / 16384.0 - ((double)calib_data->dig_T1) / 1024.0;
-	var1 = var1 * ((double)calib_data->dig_T2);
-	var2 = (((double)uncomp_data->temperature) / 131072.0 - ((double)calib_data->dig_T1) / 8192.0);
-	var2 = (var2 * var2) * ((double)calib_data->dig_T3);
-	calib_data->t_fine = (int32_t)(var1 + var2);
+	var1 = ((double)uncomp_data->temperature) / 16384.0 - ((double)calib_data->m_T1) / 1024.0;
+	var1 = var1 * ((double)calib_data->m_T2);
+	var2 = (((double)uncomp_data->temperature) / 131072.0 - ((double)calib_data->m_T1) / 8192.0);
+	var2 = (var2 * var2) * ((double)calib_data->m_T3);
+	calib_data->m_t_fine = (int32_t)(var1 + var2);
 	temperature = (var1 + var2) / 5120.0;
 
 	if (temperature < temperature_min)
@@ -925,20 +925,20 @@ static double compensate_pressure(const struct bme280_uncomp_data *uncomp_data,
 	double pressure_min = 30000.0;
 	double pressure_max = 110000.0;
 
-	var1 = ((double)calib_data->t_fine / 2.0) - 64000.0;
-	var2 = var1 * var1 * ((double)calib_data->dig_P6) / 32768.0;
-	var2 = var2 + var1 * ((double)calib_data->dig_P5) * 2.0;
-	var2 = (var2 / 4.0) + (((double)calib_data->dig_P4) * 65536.0);
-	var3 = ((double)calib_data->dig_P3) * var1 * var1 / 524288.0;
-	var1 = (var3 + ((double)calib_data->dig_P2) * var1) / 524288.0;
-	var1 = (1.0 + var1 / 32768.0) * ((double)calib_data->dig_P1);
+	var1 = ((double)calib_data->m_t_fine / 2.0) - 64000.0;
+	var2 = var1 * var1 * ((double)calib_data->m_P6) / 32768.0;
+	var2 = var2 + var1 * ((double)calib_data->m_P5) * 2.0;
+	var2 = (var2 / 4.0) + (((double)calib_data->m_P4) * 65536.0);
+	var3 = ((double)calib_data->m_P3) * var1 * var1 / 524288.0;
+	var1 = (var3 + ((double)calib_data->m_P2) * var1) / 524288.0;
+	var1 = (1.0 + var1 / 32768.0) * ((double)calib_data->m_P1);
 	/* avoid exception caused by division by zero */
 	if (var1) {
 		pressure = 1048576.0 - (double) uncomp_data->pressure;
 		pressure = (pressure - (var2 / 4096.0)) * 6250.0 / var1;
-		var1 = ((double)calib_data->dig_P9) * pressure * pressure / 2147483648.0;
-		var2 = pressure * ((double)calib_data->dig_P8) / 32768.0;
-		pressure = pressure + (var1 + var2 + ((double)calib_data->dig_P7)) / 16.0;
+		var1 = ((double)calib_data->m_P9) * pressure * pressure / 2147483648.0;
+		var2 = pressure * ((double)calib_data->m_P8) / 32768.0;
+		pressure = pressure + (var1 + var2 + ((double)calib_data->m_P7)) / 16.0;
 
 		if (pressure < pressure_min)
 			pressure = pressure_min;
@@ -968,14 +968,14 @@ static double compensate_humidity(const struct bme280_uncomp_data *uncomp_data,
 	double var5;
 	double var6;
 
-	var1 = ((double)calib_data->t_fine) - 76800.0;
-	var2 = (((double)calib_data->dig_H4) * 64.0 + (((double)calib_data->dig_H5) / 16384.0) * var1);
+	var1 = ((double)calib_data->m_t_fine) - 76800.0;
+	var2 = (((double)calib_data->m_H4) * 64.0 + (((double)calib_data->m_H5) / 16384.0) * var1);
 	var3 = uncomp_data->humidity - var2;
-	var4 = ((double)calib_data->dig_H2) / 65536.0;
-	var5 = (1.0 + (((double)calib_data->dig_H3) / 67108864.0) * var1);
-	var6 = 1.0 + (((double)calib_data->dig_H6) / 67108864.0) * var1 * var5;
+	var4 = ((double)calib_data->m_H2) / 65536.0;
+	var5 = (1.0 + (((double)calib_data->m_H3) / 67108864.0) * var1);
+	var6 = 1.0 + (((double)calib_data->m_H6) / 67108864.0) * var1 * var5;
 	var6 = var3 * var4 * (var5 * var6);
-	humidity = var6 * (1.0 - ((double)calib_data->dig_H1) * var6 / 524288.0);
+	humidity = var6 * (1.0 - ((double)calib_data->m_H1) * var6 / 524288.0);
 
 	if (humidity > humidity_max)
 		humidity = humidity_max;
@@ -999,12 +999,12 @@ static int32_t compensate_temperature(const struct bme280_uncomp_data *uncomp_da
 	int32_t temperature_min = -4000;
 	int32_t temperature_max = 8500;
 
-	var1 = (int32_t)((uncomp_data->temperature / 8) - ((int32_t)calib_data->dig_T1 * 2));
-	var1 = (var1 * ((int32_t)calib_data->dig_T2)) / 2048;
-	var2 = (int32_t)((uncomp_data->temperature / 16) - ((int32_t)calib_data->dig_T1));
-	var2 = (((var2 * var2) / 4096) * ((int32_t)calib_data->dig_T3)) / 16384;
-	calib_data->t_fine = var1 + var2;
-	temperature = (calib_data->t_fine * 5 + 128) / 256;
+	var1 = (int32_t)((uncomp_data->temperature / 8) - ((int32_t)calib_data->m_T1 * 2));
+	var1 = (var1 * ((int32_t)calib_data->m_T2)) / 2048;
+	var2 = (int32_t)((uncomp_data->temperature / 16) - ((int32_t)calib_data->m_T1));
+	var2 = (((var2 * var2) / 4096) * ((int32_t)calib_data->m_T3)) / 16384;
+	calib_data->m_t_fine = var1 + var2;
+	temperature = (calib_data->m_t_fine * 5 + 128) / 256;
 
 	if (temperature < temperature_min)
 		temperature = temperature_min;
@@ -1030,21 +1030,21 @@ static uint32_t compensate_pressure(const struct bme280_uncomp_data *uncomp_data
 	uint32_t pressure_min = 3000000;
 	uint32_t pressure_max = 11000000;
 
-	var1 = ((int64_t)calib_data->t_fine) - 128000;
-	var2 = var1 * var1 * (int64_t)calib_data->dig_P6;
-	var2 = var2 + ((var1 * (int64_t)calib_data->dig_P5) * 131072);
-	var2 = var2 + (((int64_t)calib_data->dig_P4) * 34359738368);
-	var1 = ((var1 * var1 * (int64_t)calib_data->dig_P3) / 256) + ((var1 * ((int64_t)calib_data->dig_P2) * 4096));
+	var1 = ((int64_t)calib_data->m_t_fine) - 128000;
+	var2 = var1 * var1 * (int64_t)calib_data->m_P6;
+	var2 = var2 + ((var1 * (int64_t)calib_data->m_P5) * 131072);
+	var2 = var2 + (((int64_t)calib_data->m_P4) * 34359738368);
+	var1 = ((var1 * var1 * (int64_t)calib_data->m_P3) / 256) + ((var1 * ((int64_t)calib_data->m_P2) * 4096));
 	var3 = ((int64_t)1) * 140737488355328;
-	var1 = (var3 + var1) * ((int64_t)calib_data->dig_P1) / 8589934592;
+	var1 = (var3 + var1) * ((int64_t)calib_data->m_P1) / 8589934592;
 
 	/* To avoid divide by zero exception */
 	if (var1 != 0) {
 		var4 = 1048576 - uncomp_data->pressure;
 		var4 = (((var4 * 2147483648) - var2) * 3125) / var1;
-		var1 = (((int64_t)calib_data->dig_P9) * (var4 / 8192) * (var4 / 8192)) / 33554432;
-		var2 = (((int64_t)calib_data->dig_P8) * var4) / 524288;
-		var4 = ((var4 + var1 + var2) / 256) + (((int64_t)calib_data->dig_P7) * 16);
+		var1 = (((int64_t)calib_data->m_P9) * (var4 / 8192) * (var4 / 8192)) / 33554432;
+		var2 = (((int64_t)calib_data->m_P8) * var4) / 524288;
+		var4 = ((var4 + var1 + var2) / 256) + (((int64_t)calib_data->m_P7) * 16);
 		pressure = (uint32_t)(((var4 / 2) * 100) / 128);
 
 		if (pressure < pressure_min)
@@ -1074,14 +1074,14 @@ static uint32_t compensate_pressure(const struct bme280_uncomp_data *uncomp_data
 	uint32_t pressure_min = 30000;
 	uint32_t pressure_max = 110000;
 
-	var1 = (((int32_t)calib_data->t_fine) / 2) - (int32_t)64000;
-	var2 = (((var1 / 4) * (var1 / 4)) / 2048) * ((int32_t)calib_data->dig_P6);
-	var2 = var2 + ((var1 * ((int32_t)calib_data->dig_P5)) * 2);
-	var2 = (var2 / 4) + (((int32_t)calib_data->dig_P4) * 65536);
-	var3 = (calib_data->dig_P3 * (((var1 / 4) * (var1 / 4)) / 8192)) / 8;
-	var4 = (((int32_t)calib_data->dig_P2) * var1) / 2;
+	var1 = (((int32_t)calib_data->m_t_fine) / 2) - (int32_t)64000;
+	var2 = (((var1 / 4) * (var1 / 4)) / 2048) * ((int32_t)calib_data->m_P6);
+	var2 = var2 + ((var1 * ((int32_t)calib_data->m_P5)) * 2);
+	var2 = (var2 / 4) + (((int32_t)calib_data->m_P4) * 65536);
+	var3 = (calib_data->m_P3 * (((var1 / 4) * (var1 / 4)) / 8192)) / 8;
+	var4 = (((int32_t)calib_data->m_P2) * var1) / 2;
 	var1 = (var3 + var4) / 262144;
-	var1 = (((32768 + var1)) * ((int32_t)calib_data->dig_P1)) / 32768;
+	var1 = (((32768 + var1)) * ((int32_t)calib_data->m_P1)) / 32768;
 	 /* avoid exception caused by division by zero */
 	if (var1) {
 		var5 = (uint32_t)((uint32_t)1048576) - uncomp_data->pressure;
@@ -1091,9 +1091,9 @@ static uint32_t compensate_pressure(const struct bme280_uncomp_data *uncomp_data
 		else
 			pressure = (pressure / (uint32_t)var1) * 2;
 
-		var1 = (((int32_t)calib_data->dig_P9) * ((int32_t)(((pressure / 8) * (pressure / 8)) / 8192))) / 4096;
-		var2 = (((int32_t)(pressure / 4)) * ((int32_t)calib_data->dig_P8)) / 8192;
-		pressure = (uint32_t)((int32_t)pressure + ((var1 + var2 + calib_data->dig_P7) / 16));
+		var1 = (((int32_t)calib_data->m_P9) * ((int32_t)(((pressure / 8) * (pressure / 8)) / 8192))) / 4096;
+		var2 = (((int32_t)(pressure / 4)) * ((int32_t)calib_data->m_P8)) / 8192;
+		pressure = (uint32_t)((int32_t)pressure + ((var1 + var2 + calib_data->m_P7) / 16));
 
 		if (pressure < pressure_min)
 			pressure = pressure_min;
@@ -1122,18 +1122,18 @@ static uint32_t compensate_humidity(const struct bme280_uncomp_data *uncomp_data
 	uint32_t humidity;
 	uint32_t humidity_max = 102400;
 
-	var1 = calib_data->t_fine - ((int32_t)76800);
+	var1 = calib_data->m_t_fine - ((int32_t)76800);
 	var2 = (int32_t)(uncomp_data->humidity * 16384);
-	var3 = (int32_t)(((int32_t)calib_data->dig_H4) * 1048576);
-	var4 = ((int32_t)calib_data->dig_H5) * var1;
+	var3 = (int32_t)(((int32_t)calib_data->m_H4) * 1048576);
+	var4 = ((int32_t)calib_data->m_H5) * var1;
 	var5 = (((var2 - var3) - var4) + (int32_t)16384) / 32768;
-	var2 = (var1 * ((int32_t)calib_data->dig_H6)) / 1024;
-	var3 = (var1 * ((int32_t)calib_data->dig_H3)) / 2048;
+	var2 = (var1 * ((int32_t)calib_data->m_H6)) / 1024;
+	var3 = (var1 * ((int32_t)calib_data->m_H3)) / 2048;
 	var4 = ((var2 * (var3 + (int32_t)32768)) / 1024) + (int32_t)2097152;
-	var2 = ((var4 * ((int32_t)calib_data->dig_H2)) + 8192) / 16384;
+	var2 = ((var4 * ((int32_t)calib_data->m_H2)) + 8192) / 16384;
 	var3 = var5 * var2;
 	var4 = ((var3 / 32768) * (var3 / 32768)) / 128;
-	var5 = var3 - ((var4 * ((int32_t)calib_data->dig_H1)) / 16);
+	var5 = var3 - ((var4 * ((int32_t)calib_data->m_H1)) / 16);
 	var5 = (var5 < 0 ? 0 : var5);
 	var5 = (var5 > 419430400 ? 419430400 : var5);
 	humidity = (uint32_t)(var5 / 4096);
@@ -1199,19 +1199,19 @@ static void parse_temp_press_calib_data(const uint8_t *reg_data, struct bme280_d
 {
 	struct bme280_calib_data *calib_data = &dev->calib_data;
 
-	calib_data->dig_T1 = BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
-	calib_data->dig_T2 = (int16_t)BME280_CONCAT_BYTES(reg_data[3], reg_data[2]);
-	calib_data->dig_T3 = (int16_t)BME280_CONCAT_BYTES(reg_data[5], reg_data[4]);
-	calib_data->dig_P1 = BME280_CONCAT_BYTES(reg_data[7], reg_data[6]);
-	calib_data->dig_P2 = (int16_t)BME280_CONCAT_BYTES(reg_data[9], reg_data[8]);
-	calib_data->dig_P3 = (int16_t)BME280_CONCAT_BYTES(reg_data[11], reg_data[10]);
-	calib_data->dig_P4 = (int16_t)BME280_CONCAT_BYTES(reg_data[13], reg_data[12]);
-	calib_data->dig_P5 = (int16_t)BME280_CONCAT_BYTES(reg_data[15], reg_data[14]);
-	calib_data->dig_P6 = (int16_t)BME280_CONCAT_BYTES(reg_data[17], reg_data[16]);
-	calib_data->dig_P7 = (int16_t)BME280_CONCAT_BYTES(reg_data[19], reg_data[18]);
-	calib_data->dig_P8 = (int16_t)BME280_CONCAT_BYTES(reg_data[21], reg_data[20]);
-	calib_data->dig_P9 = (int16_t)BME280_CONCAT_BYTES(reg_data[23], reg_data[22]);
-	calib_data->dig_H1 = reg_data[25];
+	calib_data->m_T1 = BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
+	calib_data->m_T2 = (int16_t)BME280_CONCAT_BYTES(reg_data[3], reg_data[2]);
+	calib_data->m_T3 = (int16_t)BME280_CONCAT_BYTES(reg_data[5], reg_data[4]);
+	calib_data->m_P1 = BME280_CONCAT_BYTES(reg_data[7], reg_data[6]);
+	calib_data->m_P2 = (int16_t)BME280_CONCAT_BYTES(reg_data[9], reg_data[8]);
+	calib_data->m_P3 = (int16_t)BME280_CONCAT_BYTES(reg_data[11], reg_data[10]);
+	calib_data->m_P4 = (int16_t)BME280_CONCAT_BYTES(reg_data[13], reg_data[12]);
+	calib_data->m_P5 = (int16_t)BME280_CONCAT_BYTES(reg_data[15], reg_data[14]);
+	calib_data->m_P6 = (int16_t)BME280_CONCAT_BYTES(reg_data[17], reg_data[16]);
+	calib_data->m_P7 = (int16_t)BME280_CONCAT_BYTES(reg_data[19], reg_data[18]);
+	calib_data->m_P8 = (int16_t)BME280_CONCAT_BYTES(reg_data[21], reg_data[20]);
+	calib_data->m_P9 = (int16_t)BME280_CONCAT_BYTES(reg_data[23], reg_data[22]);
+	calib_data->m_H1 = reg_data[25];
 
 }
 
@@ -1222,22 +1222,22 @@ static void parse_temp_press_calib_data(const uint8_t *reg_data, struct bme280_d
 static void parse_humidity_calib_data(const uint8_t *reg_data, struct bme280_dev *dev)
 {
 	struct bme280_calib_data *calib_data = &dev->calib_data;
-	int16_t dig_H4_lsb;
-	int16_t dig_H4_msb;
-	int16_t dig_H5_lsb;
-	int16_t dig_H5_msb;
+	int16_t m_H4_lsb;
+	int16_t m_H4_msb;
+	int16_t m_H5_lsb;
+	int16_t m_H5_msb;
 
-	calib_data->dig_H2 = (int16_t)BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
-	calib_data->dig_H3 = reg_data[2];
+	calib_data->m_H2 = (int16_t)BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
+	calib_data->m_H3 = reg_data[2];
 
-	dig_H4_msb = (int16_t)(int8_t)reg_data[3] * 16;
-	dig_H4_lsb = (int16_t)(reg_data[4] & 0x0F);
-	calib_data->dig_H4 = dig_H4_msb | dig_H4_lsb;
+	m_H4_msb = (int16_t)(int8_t)reg_data[3] * 16;
+	m_H4_lsb = (int16_t)(reg_data[4] & 0x0F);
+	calib_data->m_H4 = m_H4_msb | m_H4_lsb;
 
-	dig_H5_msb = (int16_t)(int8_t)reg_data[5] * 16;
-	dig_H5_lsb = (int16_t)(reg_data[4] >> 4);
-	calib_data->dig_H5 = dig_H5_msb | dig_H5_lsb;
-	calib_data->dig_H6 = (int8_t)reg_data[6];
+	m_H5_msb = (int16_t)(int8_t)reg_data[5] * 16;
+	m_H5_lsb = (int16_t)(reg_data[4] >> 4);
+	calib_data->m_H5 = m_H5_msb | m_H5_lsb;
+	calib_data->m_H6 = (int8_t)reg_data[6];
 }
 
 /*!

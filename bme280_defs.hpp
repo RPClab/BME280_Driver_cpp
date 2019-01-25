@@ -257,30 +257,31 @@ void delay_ms(uint32_t period);
 /*!
  * @brief Calibration data
  */
-struct bme280_calib_data {
+class bme280_calib_data {
  /**
  * @ Trim Variables
  */
 /**@{*/
-	uint16_t dig_T1;
-	int16_t dig_T2;
-	int16_t dig_T3;
-	uint16_t dig_P1;
-	int16_t dig_P2;
-	int16_t dig_P3;
-	int16_t dig_P4;
-	int16_t dig_P5;
-	int16_t dig_P6;
-	int16_t dig_P7;
-	int16_t dig_P8;
-	int16_t dig_P9;
-	uint8_t  dig_H1;
-	int16_t dig_H2;
-	uint8_t  dig_H3;
-	int16_t dig_H4;
-	int16_t dig_H5;
-	int8_t  dig_H6;
-	int32_t t_fine;
+public:
+	uint16_t m_T1;
+	int16_t m_T2;
+	int16_t m_T3;
+	uint16_t m_P1;
+	int16_t m_P2;
+	int16_t m_P3;
+	int16_t m_P4;
+	int16_t m_P5;
+	int16_t m_P6;
+	int16_t m_P7;
+	int16_t m_P8;
+	int16_t m_P9;
+	uint8_t  m_H1;
+	int16_t m_H2;
+	uint8_t  m_H3;
+	int16_t m_H4;
+	int16_t m_H5;
+	int8_t  m_H6;
+	int32_t m_t_fine;
 /**@}*/
 };
 
@@ -288,31 +289,32 @@ struct bme280_calib_data {
  * @brief bme280 sensor structure which comprises of temperature, pressure and
  * humidity data
  */
-#ifdef BME280_FLOAT_ENABLE
-struct bme280_data {
+class bme280_data {
+public:
+    #ifdef BME280_FLOAT_ENABLE
 	/*! Compensated pressure */
 	double pressure;
 	/*! Compensated temperature */
 	double temperature;
 	/*! Compensated humidity */
 	double humidity;
-};
-#else
-struct bme280_data {
-	/*! Compensated pressure */
+    #else
+    /*! Compensated pressure */
 	uint32_t pressure;
 	/*! Compensated temperature */
 	int32_t temperature;
 	/*! Compensated humidity */
 	uint32_t humidity;
+    #endif /* BME280_USE_FLOATING_POINT */
 };
-#endif /* BME280_USE_FLOATING_POINT */
+
 
 /*!
  * @brief bme280 sensor structure which comprises of uncompensated temperature,
  * pressure and humidity data
  */
-struct bme280_uncomp_data {
+class bme280_uncomp_data {
+public:
 	/*! un-compensated pressure */
 	uint32_t pressure;
 	/*! un-compensated temperature */
@@ -325,7 +327,8 @@ struct bme280_uncomp_data {
  * @brief bme280 sensor settings structure which comprises of mode,
  * oversampling and filter settings.
  */
-struct bme280_settings {
+class bme280_settings {
+public:
 	/*! pressure oversampling */
 	uint8_t osr_p;
 	/*! temperature oversampling */
@@ -349,7 +352,8 @@ public:
 /*!
  * @brief bme280 device structure
  */
-struct bme280_dev {
+class bme280_dev {
+public:
 	/*! Chip Id */
 	uint8_t chip_id;
 	/*! Device Id */
