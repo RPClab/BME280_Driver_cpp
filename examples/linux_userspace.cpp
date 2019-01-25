@@ -29,12 +29,6 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
   uint8_t settings_sel;
   struct bme280_data comp_data;
 
-  /* Recommended mode of operation: Indoor navigation */
-  bm.settings.osr_h = BME280_OVERSAMPLING_1X;
-  bm.settings.osr_p = BME280_OVERSAMPLING_16X;
-  bm.settings.osr_t = BME280_OVERSAMPLING_2X;
-  bm.settings.filter = BME280_FILTER_COEFF_16;
-
   settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
 
   rslt = bm.bme280_set_sensor_settings(settings_sel);
@@ -54,8 +48,13 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
 int main(int argc, char* argv[])
 {
   I2C i2c(argv[1],"0x76");
+  settings setting;
+  setting.setOversamplingPressure("16X");
+  setting.setOversamplingHumidity("1X");
+  setting.setOversamplingTemperature("2X");
+  setting.setFilterCoefficient("16");
   i2c.connect();
-  bme280 bm;
+  bme280 bm(i2c,setting);
   bm.m_IO=&i2c;
   int8_t rslt = BME280_OK;
 

@@ -55,11 +55,119 @@
 
 /* Header includes */
 #include "bme280_defs.hpp"
+#include <map>
+#include <iostream>
+class settings
+{
+public:
+    void setOversamplingPressure(const std::string& over)
+    {
+        std::map<std::string,uint8_t>::iterator found=Oversampling.find(over);
+        if(found!=Oversampling.end()) osr_p=found->second;
+        else
+        {
+            std::cout<<"Unknowm Oversampling option"<<std::endl;
+        }
+    }
+    void setOversamplingTemperature(const std::string& over)
+    {
+        std::map<std::string,uint8_t>::iterator found=Oversampling.find(over);
+        if(found!=Oversampling.end()) osr_t=found->second;
+        else
+        {
+            std::cout<<"Unknowm Oversampling option"<<std::endl;
+        }
+    }
+    void setOversamplingHumidity(const std::string& over)
+    {
+        std::map<std::string,uint8_t>::iterator found=Oversampling.find(over);
+        if(found!=Oversampling.end()) osr_h=found->second;
+        else
+        {
+            std::cout<<"Unknowm Oversampling option"<<std::endl;
+        }
+    }
+    void setStandbyTime(const std::string& time)
+    {
+        std::map<std::string,uint8_t>::iterator found=StandbyTime.find(time);
+        if(found!=Oversampling.end()) standby_time=found->second;
+        else
+        {
+            std::cout<<"Unknowm StandbyTimne option"<<std::endl;
+        }
+    }
+    void setFilterCoefficient(const std::string& coeff)
+    {
+        std::map<std::string,uint8_t>::iterator found=FilterCoefficient.find(coeff);
+        if(found!=Oversampling.end()) standby_time=found->second;
+        else
+        {
+            std::cout<<"Unknowm FilterCoefficient option"<<std::endl;
+        }
+    }
+    uint8_t getOversamplingPressure()
+    {
+        return osr_p;
+    }
+    uint8_t getOversamplingTemperature()
+    {
+        return osr_t;
+    }
+    uint8_t getOversamplingHumidity()
+    {
+        return osr_h;
+    }
+    uint8_t getFilterCoefficient()
+    {
+        return filter;
+    }
+    uint8_t getStandbyTime()
+    {
+        return standby_time;
+    }
+    
+    void setOversamplingPressure(uint8_t val)
+    {
+        osr_p=val;
+    }
+    void setOversamplingTemperature(uint8_t val)
+    {
+        osr_t=val;
+    }
+    void setOversamplingHumidity(uint8_t val)
+    {
+        osr_h=val;
+    }
+    void setFilterCoefficient(uint8_t val)
+    {
+        filter=val;
+    }
+    void setStandbyTime(uint8_t val)
+    {
+        standby_time=val;
+    }
+private:
+    /*! pressure oversampling */
+	uint8_t osr_p;
+	/*! temperature oversampling */
+	uint8_t osr_t;
+	/*! humidity oversampling */
+	uint8_t osr_h;
+	/*! filter coefficient */
+	uint8_t filter;
+	/*! standby time */
+	uint8_t standby_time;
+    /**\name Oversampling macros **/
+    std::map<std::string,uint8_t> Oversampling{{"NO_OVERSAMPLING",0x00},{"1X",0x01},{"2X",0x02},{"4X",0x03},{"8X",0x04},{"16X",0x05}};
+    std::map<std::string,uint8_t> StandbyTime{{"1ms",0x00},{"62.5ms",0x01},{"125ms",0x02},{"250ms",0x03},{"500ms",0x04},{"1000ms",0x05},{"10ms",0x06},{"20ms",0x07}};
+    std::map<std::string,uint8_t> FilterCoefficient{{"OFF",0x00},{"2",0x01},{"4",0x02},{"8",0x03},{"16",0x04}};
+};
 
 
 class bme280
 {
 public:
+    bme280(IO& io,const settings& settings):m_IO(&io),m_settings(settings){};
     void delay_ms(uint32_t period);
     /*!
     *  @brief This API is the entry point.
@@ -221,7 +329,7 @@ public:
                         struct bme280_data *comp_data, struct bme280_calib_data *calib_data);
     IO* m_IO{nullptr};
     /*! Sensor settings */
-	bme280_settings settings;
+	settings m_settings;
 private:
     
     /*! Chip Id */
@@ -397,7 +505,7 @@ private:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t set_osr_humidity_settings(const struct bme280_settings *settings);
+    int8_t set_osr_humidity_settings();
 
     /*!
     * @brief This internal API sets the oversampling settings for pressure,
@@ -410,7 +518,7 @@ private:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t set_osr_settings(uint8_t desired_settings, const struct bme280_settings *settings);
+    int8_t set_osr_settings(uint8_t desired_settings);
 
     /*!
     * @brief This API sets the pressure and/or temperature oversampling settings
@@ -422,7 +530,7 @@ private:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t set_osr_press_temp_settings(uint8_t desired_settings, const struct bme280_settings *settings);
+    int8_t set_osr_press_temp_settings(uint8_t desired_settings);
 
     /*!
     * @brief This internal API fills the pressure oversampling settings provided by
@@ -431,7 +539,7 @@ private:
     * @param[out] reg_data : Variable which is filled according to the pressure
     * oversampling data provided by the user.
     */
-    void fill_osr_press_settings(uint8_t *reg_data, const struct bme280_settings *settings);
+    void fill_osr_press_settings(uint8_t *reg_data);
 
     /*!
     * @brief This internal API fills the temperature oversampling settings provided
@@ -440,7 +548,7 @@ private:
     * @param[out] reg_data : Variable which is filled according to the temperature
     * oversampling data provided by the user.
     */
-    void fill_osr_temp_settings(uint8_t *reg_data, const struct bme280_settings *settings);
+    void fill_osr_temp_settings(uint8_t *reg_data);
 
     /*!
     * @brief This internal API sets the filter and/or standby duration settings
@@ -452,7 +560,7 @@ private:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t set_filter_standby_settings(uint8_t desired_settings, const struct bme280_settings *settings);
+    int8_t set_filter_standby_settings(uint8_t desired_settings);
 
     /*!
     * @brief This internal API fills the filter settings provided by the user
@@ -461,7 +569,7 @@ private:
     * @param[out] reg_data : Variable which is filled according to the filter
     * settings data provided by the user.
     */
-    void fill_filter_settings(uint8_t *reg_data, const struct bme280_settings *settings);
+    void fill_filter_settings(uint8_t *reg_data);
 
     /*!
     * @brief This internal API fills the standby duration settings provided by the
@@ -470,7 +578,7 @@ private:
     * @param[out] reg_data : Variable which is filled according to the standby
     * settings data provided by the user.
     */
-    void fill_standby_settings(uint8_t *reg_data, const struct bme280_settings *settings);
+    void fill_standby_settings(uint8_t *reg_data);
 
     /*!
     * @brief This internal API parse the oversampling(pressure, temperature
@@ -479,7 +587,7 @@ private:
     *
     * @param[in] reg_data : Register data to be parsed.
     */
-    void parse_device_settings(const uint8_t *reg_data, struct bme280_settings *settings);
+    void parse_device_settings(const uint8_t *reg_data);
 
     /*!
     * @brief This internal API reloads the already existing device settings in the
@@ -491,7 +599,7 @@ private:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t reload_device_settings(const struct bme280_settings *settings);
+    int8_t reload_device_settings();
 };
 
 #endif /* BME280_H_ */

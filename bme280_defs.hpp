@@ -171,31 +171,6 @@
 #define BME280_STANDBY_SEL			uint8_t(1 << 4)
 #define BME280_ALL_SETTINGS_SEL		uint8_t(0x1F)
 
-/**\name Oversampling macros */
-#define BME280_NO_OVERSAMPLING		uint8_t(0x00)
-#define BME280_OVERSAMPLING_1X		uint8_t(0x01)
-#define BME280_OVERSAMPLING_2X		uint8_t(0x02)
-#define BME280_OVERSAMPLING_4X		uint8_t(0x03)
-#define BME280_OVERSAMPLING_8X		uint8_t(0x04)
-#define BME280_OVERSAMPLING_16X		uint8_t(0x05)
-
-/**\name Standby duration selection macros */
-#define BME280_STANDBY_TIME_1_MS              (0x00)
-#define BME280_STANDBY_TIME_62_5_MS           (0x01)
-#define BME280_STANDBY_TIME_125_MS			  (0x02)
-#define BME280_STANDBY_TIME_250_MS            (0x03)
-#define BME280_STANDBY_TIME_500_MS            (0x04)
-#define BME280_STANDBY_TIME_1000_MS           (0x05)
-#define BME280_STANDBY_TIME_10_MS             (0x06)
-#define BME280_STANDBY_TIME_20_MS             (0x07)
-
-/**\name Filter coefficient selection macros */
-#define BME280_FILTER_COEFF_OFF               (0x00)
-#define BME280_FILTER_COEFF_2                 (0x01)
-#define BME280_FILTER_COEFF_4                 (0x02)
-#define BME280_FILTER_COEFF_8                 (0x03)
-#define BME280_FILTER_COEFF_16                (0x04)
-
 #include <chrono>
 #include <thread>
 
@@ -274,16 +249,7 @@ public:
  */
 class bme280_settings {
 public:
-	/*! pressure oversampling */
-	uint8_t osr_p;
-	/*! temperature oversampling */
-	uint8_t osr_t;
-	/*! humidity oversampling */
-	uint8_t osr_h;
-	/*! filter coefficient */
-	uint8_t filter;
-	/*! standby time */
-	uint8_t standby_time;
+
 };
 
 class IO
