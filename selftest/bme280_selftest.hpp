@@ -53,7 +53,7 @@
 #ifndef BME280_SELFTEST_H_
 #define BME280_SELFTEST_H_
 
-#include "bme280.h"
+#include "bme280.hpp"
 
 /*! CPP guard */
 #ifdef __cplusplus

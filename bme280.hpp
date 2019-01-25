@@ -59,7 +59,7 @@ extern "C" {
 #endif
 
 /* Header includes */
-#include "bme280_defs.h"
+#include "bme280_defs.hpp"
 
 /*!
  *  @brief This API is the entry point.

@@ -4,7 +4,7 @@
   tested: Raspberry Pi.
   Use like: ./bme280 /dev/i2c-0
 */
-#include "bme280.h"
+#include "bme280.hpp"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
