@@ -57,13 +57,7 @@
 
 /********************************************************/
 /* header includes */
-#ifdef __KERNEL__
-#include <linux/types.h>
-#include <linux/kernel.h>
-#else
-#include <stdint.h>
-#include <stddef.h>
-#endif
+
 #include <string>
 #include <cstring>
 #include <stdio.h>
