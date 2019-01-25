@@ -58,8 +58,8 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
 
 int main(int argc, char* argv[])
 {
-  I2C i2c;
-  i2c.connect(argv[1],"0x76");
+  I2C i2c(argv[1],"0x76");
+  i2c.connect();
   struct bme280_dev dev;
   dev.m_IO=&i2c;
   int8_t rslt = BME280_OK;
