@@ -117,10 +117,10 @@ int8_t bme280::bme280_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len
 	/* Proceed if null check is fine */
 	if (rslt == BME280_OK) {
 		/* If interface selected is SPI */
-		if (dev->intf != BME280_I2C_INTF)
+		if (m_IO->getInterfaceName()!= "I2C")
 			reg_addr = reg_addr | 0x80;
 		/* Read the data  */
-		rslt = dev->m_IO->read(reg_addr, reg_data, len);
+		rslt = m_IO->read(reg_addr, reg_data, len);
 		/* Check for communication error */
 		if (rslt != BME280_OK)
 			rslt = BME280_E_COMM_FAIL;
@@ -151,7 +151,7 @@ int8_t bme280::bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8
 		if (len != 0) {
 			temp_buff[0] = reg_data[0];
 			/* If interface selected is SPI */
-			if (dev->intf != BME280_I2C_INTF) {
+			if (m_IO->getInterfaceName() !="I2C") {
 				for (reg_addr_cnt = 0; reg_addr_cnt < len; reg_addr_cnt++)
 					reg_addr[reg_addr_cnt] = reg_addr[reg_addr_cnt] & 0x7F;
 			}
@@ -164,7 +164,7 @@ int8_t bme280::bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8
 			} else {
 				temp_len = len;
 			}
-			rslt = dev->m_IO->write(reg_addr[0], temp_buff, temp_len);
+			rslt = m_IO->write(reg_addr[0], temp_buff, temp_len);
 			/* Check for communication error */
 			if (rslt != BME280_OK)
 				rslt = BME280_E_COMM_FAIL;
@@ -981,7 +981,7 @@ int8_t bme280::null_ptr_check(const struct bme280_dev *dev)
 {
 	int8_t rslt;
 
-	if ((dev == nullptr) || (dev->m_IO == nullptr)) {
+	if ((dev == nullptr) || (m_IO == nullptr)) {
 		/* Device structure pointer is not valid */
 		rslt = BME280_E_NULL_PTR;
 	} else {

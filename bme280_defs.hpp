@@ -196,16 +196,6 @@
 #define BME280_FILTER_COEFF_8                 (0x03)
 #define BME280_FILTER_COEFF_16                (0x04)
 
-/*!
- * @brief Interface selection Enums
- */
-enum bme280_intf {
-	/*! SPI interface */
-	BME280_SPI_INTF,
-	/*! I2C interface */
-	BME280_I2C_INTF
-};
-
 #include <chrono>
 #include <thread>
 
@@ -302,6 +292,12 @@ public:
     virtual int8_t read(uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
     virtual int8_t write(uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
     virtual ~IO(){};
+    std::string& getInterfaceName()
+    {
+        return m_interfaceName;
+    }
+protected:
+    std::string m_interfaceName{""};
 };
 
 /*!
@@ -309,9 +305,6 @@ public:
  */
 class bme280_dev {
 public:
-	/*! SPI/I2C interface */
-	enum bme280_intf intf;
-    IO* m_IO{nullptr};
 	/*! Trim data */
 	struct bme280_calib_data calib_data;
 	/*! Sensor settings */
@@ -323,7 +316,8 @@ class I2C : public IO
 public:
     I2C(const std::string& path,const std::string& adress):m_path(path)
     {
-	m_adress=static_cast<uint8_t>(std::stoi(adress,0,16));
+        m_adress=static_cast<uint8_t>(std::stoi(adress,0,16));
+        m_interfaceName="I2C";
     };
     virtual int8_t read(uint8_t reg_addr,uint8_t *data, uint16_t len)
     {

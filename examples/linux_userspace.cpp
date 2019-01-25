@@ -56,10 +56,8 @@ int main(int argc, char* argv[])
   I2C i2c(argv[1],"0x76");
   i2c.connect();
   bme280 bm;
-  //struct bme280_dev dev;
-  bm.m_dev.m_IO=&i2c;
+  bm.m_IO=&i2c;
   int8_t rslt = BME280_OK;
-  bm.m_dev.intf = BME280_I2C_INTF;
 
   rslt = bm.bme280_init(&bm.m_dev);
   stream_sensor_data_forced_mode(bm);
