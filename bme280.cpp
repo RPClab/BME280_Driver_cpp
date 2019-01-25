@@ -199,11 +199,11 @@ int8_t bme280::bme280_set_sensor_settings(uint8_t desired_settings, const struct
 			/* Check if user wants to change oversampling
 			   settings */
 			if (are_settings_changed(OVERSAMPLING_SETTINGS, desired_settings))
-				rslt = set_osr_settings(desired_settings, &dev->settings, dev);
+				rslt = set_osr_settings(desired_settings, &settings, dev);
 			/* Check if user wants to change filter and/or
 			   standby settings */
 			if ((rslt == BME280_OK) && are_settings_changed(FILTER_STANDBY_SETTINGS, desired_settings))
-				rslt = set_filter_standby_settings(desired_settings, &dev->settings, dev);
+				rslt = set_filter_standby_settings(desired_settings, &settings, dev);
 		}
 	}
 
@@ -225,7 +225,7 @@ int8_t bme280::bme280_get_sensor_settings(struct bme280_dev *dev)
 	if (rslt == BME280_OK) {
 		rslt = bme280_get_regs(BME280_CTRL_HUM_ADDR, reg_data, 4, dev);
 		if (rslt == BME280_OK)
-			parse_device_settings(reg_data, &dev->settings);
+			parse_device_settings(reg_data, &settings);
 	}
 
 	return rslt;
@@ -324,7 +324,7 @@ int8_t bme280::bme280_get_sensor_data(uint8_t sensor_comp, struct bme280_data *c
 			bme280_parse_sensor_data(reg_data, &uncomp_data);
 			/* Compensate the pressure and/or temperature and/or
 			   humidity data from the sensor */
-			rslt = bme280_compensate_data(sensor_comp, &uncomp_data, comp_data, &dev->calib_data);
+			rslt = bme280_compensate_data(sensor_comp, &uncomp_data, comp_data, &calib_data);
 		}
 	} else {
 		rslt = BME280_E_NULL_PTR;
@@ -911,21 +911,20 @@ void bme280::interleave_reg_addr(const uint8_t *reg_addr, uint8_t *temp_buff, co
  */
 void bme280::parse_temp_press_calib_data(const uint8_t *reg_data, struct bme280_dev *dev)
 {
-	struct bme280_calib_data *calib_data = &dev->calib_data;
 
-	calib_data->m_T1 = BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
-	calib_data->m_T2 = (int16_t)BME280_CONCAT_BYTES(reg_data[3], reg_data[2]);
-	calib_data->m_T3 = (int16_t)BME280_CONCAT_BYTES(reg_data[5], reg_data[4]);
-	calib_data->m_P1 = BME280_CONCAT_BYTES(reg_data[7], reg_data[6]);
-	calib_data->m_P2 = (int16_t)BME280_CONCAT_BYTES(reg_data[9], reg_data[8]);
-	calib_data->m_P3 = (int16_t)BME280_CONCAT_BYTES(reg_data[11], reg_data[10]);
-	calib_data->m_P4 = (int16_t)BME280_CONCAT_BYTES(reg_data[13], reg_data[12]);
-	calib_data->m_P5 = (int16_t)BME280_CONCAT_BYTES(reg_data[15], reg_data[14]);
-	calib_data->m_P6 = (int16_t)BME280_CONCAT_BYTES(reg_data[17], reg_data[16]);
-	calib_data->m_P7 = (int16_t)BME280_CONCAT_BYTES(reg_data[19], reg_data[18]);
-	calib_data->m_P8 = (int16_t)BME280_CONCAT_BYTES(reg_data[21], reg_data[20]);
-	calib_data->m_P9 = (int16_t)BME280_CONCAT_BYTES(reg_data[23], reg_data[22]);
-	calib_data->m_H1 = reg_data[25];
+	calib_data.m_T1 = BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
+	calib_data.m_T2 = (int16_t)BME280_CONCAT_BYTES(reg_data[3], reg_data[2]);
+	calib_data.m_T3 = (int16_t)BME280_CONCAT_BYTES(reg_data[5], reg_data[4]);
+	calib_data.m_P1 = BME280_CONCAT_BYTES(reg_data[7], reg_data[6]);
+	calib_data.m_P2 = (int16_t)BME280_CONCAT_BYTES(reg_data[9], reg_data[8]);
+	calib_data.m_P3 = (int16_t)BME280_CONCAT_BYTES(reg_data[11], reg_data[10]);
+	calib_data.m_P4 = (int16_t)BME280_CONCAT_BYTES(reg_data[13], reg_data[12]);
+	calib_data.m_P5 = (int16_t)BME280_CONCAT_BYTES(reg_data[15], reg_data[14]);
+	calib_data.m_P6 = (int16_t)BME280_CONCAT_BYTES(reg_data[17], reg_data[16]);
+	calib_data.m_P7 = (int16_t)BME280_CONCAT_BYTES(reg_data[19], reg_data[18]);
+	calib_data.m_P8 = (int16_t)BME280_CONCAT_BYTES(reg_data[21], reg_data[20]);
+	calib_data.m_P9 = (int16_t)BME280_CONCAT_BYTES(reg_data[23], reg_data[22]);
+	calib_data.m_H1 = reg_data[25];
 
 }
 
@@ -935,23 +934,22 @@ void bme280::parse_temp_press_calib_data(const uint8_t *reg_data, struct bme280_
  */
 void bme280::parse_humidity_calib_data(const uint8_t *reg_data, struct bme280_dev *dev)
 {
-	struct bme280_calib_data *calib_data = &dev->calib_data;
 	int16_t m_H4_lsb;
 	int16_t m_H4_msb;
 	int16_t m_H5_lsb;
 	int16_t m_H5_msb;
 
-	calib_data->m_H2 = (int16_t)BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
-	calib_data->m_H3 = reg_data[2];
+	calib_data.m_H2 = (int16_t)BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
+	calib_data.m_H3 = reg_data[2];
 
 	m_H4_msb = (int16_t)(int8_t)reg_data[3] * 16;
 	m_H4_lsb = (int16_t)(reg_data[4] & 0x0F);
-	calib_data->m_H4 = m_H4_msb | m_H4_lsb;
+	calib_data.m_H4 = m_H4_msb | m_H4_lsb;
 
 	m_H5_msb = (int16_t)(int8_t)reg_data[5] * 16;
 	m_H5_lsb = (int16_t)(reg_data[4] >> 4);
-	calib_data->m_H5 = m_H5_msb | m_H5_lsb;
-	calib_data->m_H6 = (int8_t)reg_data[6];
+	calib_data.m_H5 = m_H5_msb | m_H5_lsb;
+	calib_data.m_H6 = (int8_t)reg_data[6];
 }
 
 /*!

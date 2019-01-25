@@ -30,10 +30,10 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
   struct bme280_data comp_data;
 
   /* Recommended mode of operation: Indoor navigation */
-  bm.m_dev.settings.osr_h = BME280_OVERSAMPLING_1X;
-  bm.m_dev.settings.osr_p = BME280_OVERSAMPLING_16X;
-  bm.m_dev.settings.osr_t = BME280_OVERSAMPLING_2X;
-  bm.m_dev.settings.filter = BME280_FILTER_COEFF_16;
+  bm.settings.osr_h = BME280_OVERSAMPLING_1X;
+  bm.settings.osr_p = BME280_OVERSAMPLING_16X;
+  bm.settings.osr_t = BME280_OVERSAMPLING_2X;
+  bm.settings.filter = BME280_FILTER_COEFF_16;
 
   settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
 

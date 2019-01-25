@@ -305,10 +305,6 @@ protected:
  */
 class bme280_dev {
 public:
-	/*! Trim data */
-	struct bme280_calib_data calib_data;
-	/*! Sensor settings */
-	struct bme280_settings settings;
 };
 
 class I2C : public IO
