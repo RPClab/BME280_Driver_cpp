@@ -6,6 +6,11 @@ cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
 # ----- Project name and version -----
 project(BME280-Driver)
+
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR}/bin CACHE PATH "..." FORCE)
+endif()
+
 set( ${PROJECT_NAME}_VERSION_MAJOR 3 )
 set( ${PROJECT_NAME}_VERSION_MINOR 3 )
 set( ${PROJECT_NAME}_VERSION_PATCH 4 )
