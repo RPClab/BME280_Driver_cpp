@@ -53,11 +53,6 @@
 #ifndef BME280_H_
 #define BME280_H_
 
-/*! CPP guard */
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* Header includes */
 #include "bme280_defs.hpp"
 
@@ -233,8 +228,5 @@ void bme280_parse_sensor_data(const uint8_t *reg_data, struct bme280_uncomp_data
 int8_t bme280_compensate_data(uint8_t sensor_comp, const struct bme280_uncomp_data *uncomp_data,
 				     struct bme280_data *comp_data, struct bme280_calib_data *calib_data);
 
-#ifdef __cplusplus
-}
-#endif /* End of CPP guard */
 #endif /* BME280_H_ */
 /** @}*/

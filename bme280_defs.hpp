@@ -64,7 +64,15 @@
 #include <stdint.h>
 #include <stddef.h>
 #endif
-
+#include <string>
+#include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <linux/i2c-dev.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <fcntl.h>
 /********************************************************/
 /*! @name		Common macros		        */
 /********************************************************/
@@ -335,6 +343,14 @@ struct bme280_settings {
 	uint8_t standby_time;
 };
 
+class IO
+{
+public:
+    virtual int8_t read(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
+    virtual int8_t write(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)=0;
+    virtual ~IO(){};
+};
+
 /*!
  * @brief bme280 device structure
  */
@@ -345,10 +361,7 @@ struct bme280_dev {
 	uint8_t dev_id;
 	/*! SPI/I2C interface */
 	enum bme280_intf intf;
-	/*! Read function pointer */
-	bme280_com_fptr_t read;
-	/*! Write function pointer */
-	bme280_com_fptr_t write;
+    IO* m_IO{NULL};
 	/*! Delay function pointer */
 	bme280_delay_fptr_t delay_ms;
 	/*! Trim data */
@@ -357,6 +370,44 @@ struct bme280_dev {
 	struct bme280_settings settings;
 };
 
+
+class I2C : public IO
+{
+public:
+    virtual int8_t read(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)
+    {
+        ::write(m_fd, &reg_addr,1);
+        ::read(m_fd, data, len);
+        return 0; 
+    }
+    virtual int8_t write(uint8_t dev_id, uint8_t reg_addr,uint8_t *data, uint16_t len)
+    {
+        int8_t *buf;
+        buf =static_cast<int8_t*>(malloc(len +1));
+        buf[0] = reg_addr;
+        memcpy(buf +1, data, len);
+        ::write(m_fd, buf, len +1);
+        free(buf);
+        return 0;
+    }
+    int8_t connect(const std::string& path, const std::string& port)
+    {
+        if((m_fd = open(m_path.c_str(),O_RDWR)) < 0) 
+        {
+            printf("Failed to open the i2c bus %s", m_path.c_str());
+            exit(1);
+        }
+        if(ioctl(m_fd,I2C_SLAVE,std::stoi(m_adress)) < 0) 
+        {
+            printf("Failed to acquire bus access and/or talk to slave.\n");
+            exit(1);
+        }
+    }
+private:
+    int m_fd;
+    std::string m_path{""};
+    std::string m_adress{""};
+};
 #endif /* BME280_DEFS_H_ */
 /** @}*/
 /** @}*/

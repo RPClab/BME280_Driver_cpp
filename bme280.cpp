@@ -400,7 +400,7 @@ int8_t bme280_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len, const 
 		if (dev->intf != BME280_I2C_INTF)
 			reg_addr = reg_addr | 0x80;
 		/* Read the data  */
-		rslt = dev->read(dev->dev_id, reg_addr, reg_data, len);
+		rslt = dev->m_IO->read(dev->dev_id, reg_addr, reg_data, len);
 		/* Check for communication error */
 		if (rslt != BME280_OK)
 			rslt = BME280_E_COMM_FAIL;
@@ -444,7 +444,7 @@ int8_t bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8_t len, 
 			} else {
 				temp_len = len;
 			}
-			rslt = dev->write(dev->dev_id, reg_addr[0], temp_buff, temp_len);
+			rslt = dev->m_IO->write(dev->dev_id, reg_addr[0], temp_buff, temp_len);
 			/* Check for communication error */
 			if (rslt != BME280_OK)
 				rslt = BME280_E_COMM_FAIL;
@@ -1261,7 +1261,7 @@ static int8_t null_ptr_check(const struct bme280_dev *dev)
 {
 	int8_t rslt;
 
-	if ((dev == NULL) || (dev->read == NULL) || (dev->write == NULL) || (dev->delay_ms == NULL)) {
+	if ((dev == NULL) || (dev->m_IO == NULL) || (dev->delay_ms == NULL)) {
 		/* Device structure pointer is not valid */
 		rslt = BME280_E_NULL_PTR;
 	} else {

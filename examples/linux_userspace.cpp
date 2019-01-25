@@ -14,29 +14,9 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-int fd;
-
-int8_t user_i2c_read(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len)
-{
-  write(fd, &reg_addr,1);
-  read(fd, data, len);
-  return 0;
-}
-
 void user_delay_ms(uint32_t period)
 {
   usleep(period*1000);
-}
-
-int8_t user_i2c_write(uint8_t id, uint8_t reg_addr, uint8_t *data, uint16_t len)
-{
-  int8_t *buf;
-  buf = malloc(len +1);
-  buf[0] = reg_addr;
-  memcpy(buf +1, data, len);
-  write(fd, buf, len +1);
-  free(buf);
-  return 0;
 }
 
 void print_sensor_data(struct bme280_data *comp_data)
@@ -78,21 +58,13 @@ int8_t stream_sensor_data_forced_mode(struct bme280_dev *dev)
 
 int main(int argc, char* argv[])
 {
+  I2C i2c;
+  i2c.connect(argv[1],"0x76");
   struct bme280_dev dev;
+  dev.m_IO=&i2c;
   int8_t rslt = BME280_OK;
-
-  if ((fd = open(argv[1], O_RDWR)) < 0) {
-    printf("Failed to open the i2c bus %s", argv[1]);
-    exit(1);
-  }
-  if (ioctl(fd, I2C_SLAVE, 0x76) < 0) {
-    printf("Failed to acquire bus access and/or talk to slave.\n");
-    exit(1);
-  }
   dev.dev_id = BME280_I2C_ADDR_PRIM;
   dev.intf = BME280_I2C_INTF;
-  dev.read = user_i2c_read;
-  dev.write = user_i2c_write;
   dev.delay_ms = user_delay_ms;
 
   rslt = bme280_init(&dev);

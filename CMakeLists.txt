@@ -27,4 +27,8 @@ add_library(bme280 STATIC ${BME280-Driver})
 
 # install configuration
 install(FILES ${BME280_DRIVER_PUBLIC_HEADERS} DESTINATION include/bme280)
-install(TARGETS bme280 ARCHIVE DESTINATION lib RUNTIME DESTINATION bin LIBRARY DESTINATION lib)
+install(TARGETS bme280 ARCHIVE DESTINATION bin RUNTIME DESTINATION bin LIBRARY DESTINATION lib)
+
+add_executable(Test ${PROJECT_SOURCE_DIR}/examples/linux_userspace.cpp)
+target_link_libraries(Test bme280)
+install(TARGETS bme280 ARCHIVE DESTINATION bin RUNTIME DESTINATION bin LIBRARY DESTINATION lib)
