@@ -168,6 +168,10 @@ class bme280
 {
 public:
     bme280(IO& io,const settings& settings):m_IO(&io),m_settings(settings){};
+    void printCalibParameters()
+    {
+        m_calib_data.printCalibParameters();
+    }
     void delay_ms(uint32_t period);
     /*!
     *  @brief This API is the entry point.

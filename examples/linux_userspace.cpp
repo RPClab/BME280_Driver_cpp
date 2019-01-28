@@ -32,7 +32,7 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
   settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
 
   rslt = bm.bme280_set_sensor_settings(settings_sel);
-
+  
   printf("Temperature, Pressure, Humidity\r\n");
   /* Continuously stream sensor data */
   while (1) {
@@ -59,5 +59,6 @@ int main(int argc, char* argv[])
   int8_t rslt = BME280_OK;
 
   rslt = bm.bme280_init();
+  bm.printCalibParameters();
   stream_sensor_data_forced_mode(bm);
 }
