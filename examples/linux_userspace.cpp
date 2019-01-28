@@ -5,14 +5,7 @@
   Use like: ./bme280 /dev/i2c-0
 */
 #include "bme280.hpp"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <linux/i2c-dev.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <fcntl.h>
+#include "I2C.hpp"
 
 void print_sensor_data(data& dat)
 {

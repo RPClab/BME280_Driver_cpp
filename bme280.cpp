@@ -49,7 +49,6 @@
     @brief Sensor driver for BME280 sensor */
 #include "bme280.hpp"
 
-
 void bme280::delay_ms(uint32_t period)
 {
     std::this_thread::sleep_for(std::chrono::milliseconds(period));

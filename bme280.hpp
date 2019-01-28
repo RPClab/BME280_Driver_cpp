@@ -52,7 +52,7 @@
  * @{*/
 #ifndef BME280_H_
 #define BME280_H_
-
+#include "IO.hpp"
 /* Header includes */
 #include "bme280_defs.hpp"
 #include <map>
