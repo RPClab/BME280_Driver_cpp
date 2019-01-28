@@ -320,13 +320,11 @@ public:
     * humidity data.
     * @param[out] comp_data : Contains the compensated pressure and/or temperature
     * and/or humidity data.
-    * @param[in] calib_data : Pointer to the calibration data structure.
     *
     * @return Result of API execution status.
     * @retval zero -> Success / -ve value -> Error
     */
-    int8_t bme280_compensate_data(uint8_t sensor_comp, const struct bme280_uncomp_data *uncomp_data,
-                        struct bme280_data *comp_data, struct bme280_calib_data *calib_data);
+    int8_t bme280_compensate_data(uint8_t sensor_comp, const struct bme280_uncomp_data *uncomp_data,struct bme280_data *comp_data);
     IO* m_IO{nullptr};
     /*! Sensor settings */
 	settings m_settings;
@@ -334,7 +332,7 @@ private:
     
     /*! Chip Id */
 	uint8_t m_chip_id;
-    bme280_calib_data calib_data;
+    calib_data m_calib_data;
     
     /*!
     * @brief This internal API puts the device to sleep mode.
@@ -407,39 +405,33 @@ private:
     * return the compensated pressure data in double data type.
     *
     * @param[in] uncomp_data : Contains the uncompensated pressure data.
-    * @param[in] calib_data : Pointer to the calibration data structure.
     *
     * @return Compensated pressure data.
     * @retval Compensated pressure data in double.
     */
-    double compensate_pressure(const struct bme280_uncomp_data *uncomp_data,
-                            const struct bme280_calib_data *calib_data);
+    double compensate_pressure(const struct bme280_uncomp_data *uncomp_data);
 
     /*!
     * @brief This internal API is used to compensate the raw humidity data and
     * return the compensated humidity data in double data type.
     *
     * @param[in] uncomp_data : Contains the uncompensated humidity data.
-    * @param[in] calib_data : Pointer to the calibration data structure.
     *
     * @return Compensated humidity data.
     * @retval Compensated humidity data in double.
     */
-    double compensate_humidity(const struct bme280_uncomp_data *uncomp_data,
-                            const struct bme280_calib_data *calib_data);
+    double compensate_humidity(const struct bme280_uncomp_data *uncomp_data);
 
     /*!
     * @brief This internal API is used to compensate the raw temperature data and
     * return the compensated temperature data in double data type.
     *
     * @param[in] uncomp_data : Contains the uncompensated temperature data.
-    * @param[in] calib_data : Pointer to calibration data structure.
     *
     * @return Compensated temperature data.
     * @retval Compensated temperature data in double.
     */
-    double compensate_temperature(const struct bme280_uncomp_data *uncomp_data,
-                            struct bme280_calib_data *calib_data);
+    double compensate_temperature(const struct bme280_uncomp_data *uncomp_data);
 
     #else
 
@@ -448,39 +440,33 @@ private:
     * return the compensated temperature data in integer data type.
     *
     * @param[in] uncomp_data : Contains the uncompensated temperature data.
-    * @param[in] calib_data : Pointer to calibration data structure.
     *
     * @return Compensated temperature data.
     * @retval Compensated temperature data in integer.
     */
-    int32_t compensate_temperature(const struct bme280_uncomp_data *uncomp_data,
-                            struct bme280_calib_data *calib_data);
+    int32_t compensate_temperature(const struct bme280_uncomp_data *uncomp_data);
 
     /*!
     * @brief This internal API is used to compensate the raw pressure data and
     * return the compensated pressure data in integer data type.
     *
     * @param[in] uncomp_data : Contains the uncompensated pressure data.
-    * @param[in] calib_data : Pointer to the calibration data structure.
     *
     * @return Compensated pressure data.
     * @retval Compensated pressure data in integer.
     */
-    uint32_t compensate_pressure(const struct bme280_uncomp_data *uncomp_data,
-                            const struct bme280_calib_data *calib_data);
+    uint32_t compensate_pressure(const struct bme280_uncomp_data *uncomp_data);
 
     /*!
     * @brief This internal API is used to compensate the raw humidity data and
     * return the compensated humidity data in integer data type.
     *
     * @param[in] uncomp_data : Contains the uncompensated humidity data.
-    * @param[in] calib_data : Pointer to the calibration data structure.
     *
     * @return Compensated humidity data.
     * @retval Compensated humidity data in integer.
     */
-    uint32_t compensate_humidity(const struct bme280_uncomp_data *uncomp_data,
-                            const struct bme280_calib_data *calib_data);
+    uint32_t compensate_humidity(const struct bme280_uncomp_data *uncomp_data);
 
     #endif
 
