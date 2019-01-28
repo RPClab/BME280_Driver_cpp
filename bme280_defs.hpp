@@ -175,15 +175,6 @@
 #include <thread>
 #include <iostream>
 
-/*!
- * @brief bme280 sensor settings structure which comprises of mode,
- * oversampling and filter settings.
- */
-class bme280_settings {
-public:
-
-};
-
 class IO
 {
 public:

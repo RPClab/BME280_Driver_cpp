@@ -544,8 +544,6 @@ int8_t bme280::put_device_to_sleep()
 {
 	int8_t rslt;
 	uint8_t reg_data[4];
-	struct bme280_settings settings;
-
 	rslt = bme280_get_regs(BME280_CTRL_HUM_ADDR, reg_data, 4);
 	if (rslt == BME280_OK) {
 		parse_device_settings(reg_data);
