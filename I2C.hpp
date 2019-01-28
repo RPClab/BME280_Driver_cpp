@@ -17,7 +17,10 @@ public:
             m_adress=static_cast<uint8_t>(std::stoi(adress,0,16));
             m_interfaceName="I2C";
         }
-        else std::exit(15);
+        else
+        {
+            std::cout<<"Adress must be 0x76 or 0x77"<<std::endl;
+        }
     };
     virtual int8_t read(uint8_t reg_addr,uint8_t *data, uint16_t len)
     {
@@ -51,6 +54,6 @@ public:
 private:
     int m_fd;
     std::string m_path{""};
-    uint8_t m_adress;
+    uint8_t m_adress{0x76};
 };
 #endif
