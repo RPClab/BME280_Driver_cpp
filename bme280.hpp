@@ -57,6 +57,7 @@
 #include "bme280_defs.hpp"
 #include <map>
 #include <iostream>
+#include "data.hpp"
 class settings
 {
 public:
@@ -168,38 +169,11 @@ class bme280
 {
 public:
     bme280(IO& io,const settings& settings):m_IO(&io),m_settings(settings){};
-    void printCalibParameters()
-    {
-        m_calib_data.printCalibParameters();
-    }
-    #ifdef BME280_FLOAT_ENABLE
-    double getTemperature()
-    {
-        return m_data.m_temperature;
-    }
-    double getPressure()
-    {
-        return m_data.m_pressure;
-    }
-    double getHumidity()
-    {
-        return m_data.m_humidity;
-    }
-    #else
-    uint32_t getTemperature()
-    {
-        return m_data.m_temperature;
-    }
-    uint32_t getPressure()
-    {
-        return m_data.m_pressure;
-    }
-    uint32_t getHumidity()
-    {
-        return m_data.m_humidity;
-    }
-    #endif
     void delay_ms(uint32_t period);
+    data& getData()
+    {
+        return m_data;
+    }
     /*!
     *  @brief This API is the entry point.
     *  It reads the chip-id and calibration data from the sensor.
@@ -363,7 +337,6 @@ private:
     
     /*! Chip Id */
 	uint8_t m_chip_id;
-    calib_data m_calib_data;
     data m_data;
     /*!
     * @brief This internal API puts the device to sleep mode.
@@ -429,77 +402,6 @@ private:
     *  @param[in] reg_data : Contains calibration data to be parsed.
     */
     void parse_humidity_calib_data(const uint8_t *reg_data);
-
-    #ifdef BME280_FLOAT_ENABLE
-    /*!
-    * @brief This internal API is used to compensate the raw pressure data and
-    * return the compensated pressure data in double data type.
-    *
-    * @param[in] uncomp_data : Contains the uncompensated pressure data.
-    *
-    * @return Compensated pressure data.
-    * @retval Compensated pressure data in double.
-    */
-    double compensate_pressure();
-
-    /*!
-    * @brief This internal API is used to compensate the raw humidity data and
-    * return the compensated humidity data in double data type.
-    *
-    * @param[in] uncomp_data : Contains the uncompensated humidity data.
-    *
-    * @return Compensated humidity data.
-    * @retval Compensated humidity data in double.
-    */
-    double compensate_humidity();
-
-    /*!
-    * @brief This internal API is used to compensate the raw temperature data and
-    * return the compensated temperature data in double data type.
-    *
-    * @param[in] uncomp_data : Contains the uncompensated temperature data.
-    *
-    * @return Compensated temperature data.
-    * @retval Compensated temperature data in double.
-    */
-    double compensate_temperature();
-
-    #else
-
-    /*!
-    * @brief This internal API is used to compensate the raw temperature data and
-    * return the compensated temperature data in integer data type.
-    *
-    * @param[in] uncomp_data : Contains the uncompensated temperature data.
-    *
-    * @return Compensated temperature data.
-    * @retval Compensated temperature data in integer.
-    */
-    int32_t compensate_temperature();
-
-    /*!
-    * @brief This internal API is used to compensate the raw pressure data and
-    * return the compensated pressure data in integer data type.
-    *
-    * @param[in] uncomp_data : Contains the uncompensated pressure data.
-    *
-    * @return Compensated pressure data.
-    * @retval Compensated pressure data in integer.
-    */
-    uint32_t compensate_pressure();
-
-    /*!
-    * @brief This internal API is used to compensate the raw humidity data and
-    * return the compensated humidity data in integer data type.
-    *
-    * @param[in] uncomp_data : Contains the uncompensated humidity data.
-    *
-    * @return Compensated humidity data.
-    * @retval Compensated humidity data in integer.
-    */
-    uint32_t compensate_humidity();
-
-    #endif
 
     /*!
     * @brief This internal API is used to identify the settings which the user

@@ -341,27 +341,9 @@ int8_t bme280::bme280_get_sensor_data(uint8_t sensor_comp)
 void bme280::bme280_parse_sensor_data(const uint8_t *reg_data)
 {
     m_data.resetUncompensated();
-	/* Variables to store the sensor data */
-	uint32_t data_xlsb;
-	uint32_t data_lsb;
-	uint32_t data_msb;
-
-	/* Store the parsed register values for pressure data */
-	data_msb = (uint32_t)reg_data[0] << 12;
-	data_lsb = (uint32_t)reg_data[1] << 4;
-	data_xlsb = (uint32_t)reg_data[2] >> 4;
-	m_data.m_uncomp_pressure = data_msb | data_lsb | data_xlsb;
-
-	/* Store the parsed register values for temperature data */
-	data_msb = (uint32_t)reg_data[3] << 12;
-	data_lsb = (uint32_t)reg_data[4] << 4;
-	data_xlsb = (uint32_t)reg_data[5] >> 4;
-	m_data.m_uncomp_temperature = data_msb | data_lsb | data_xlsb;
-
-	/* Store the parsed register values for temperature data */
-	data_lsb = (uint32_t)reg_data[6] << 8;
-	data_msb = (uint32_t)reg_data[7];
-	m_data.m_uncomp_humidity = data_msb | data_lsb;
+    m_data.setUncompPressure(reg_data[0],reg_data[1],reg_data[2]);
+    m_data.setUncompTemperature(reg_data[3],reg_data[4],reg_data[5]);
+    m_data.setUncompHumidity(reg_data[6],reg_data[7]);
 }
 
 
@@ -380,17 +362,17 @@ int8_t bme280::bme280_compensate_data(uint8_t sensor_comp)
     if (sensor_comp & (BME280_PRESS | BME280_TEMP | BME280_HUM)) 
     {
         /* Compensate the temperature data */
-        m_data.m_temperature = compensate_temperature();
+        m_data.compensate_temperature();
     }
     if (sensor_comp & BME280_PRESS) 
     {
         /* Compensate the pressure data */
-        m_data.m_pressure = compensate_pressure();
+        m_data.compensate_pressure();
     }
     if (sensor_comp & BME280_HUM) 
     {
         /* Compensate the humidity data */
-        m_data.m_humidity = compensate_humidity();
+        m_data.compensate_humidity();
     }
 	return rslt;
 }
@@ -590,261 +572,6 @@ int8_t bme280::reload_device_settings()
 	return rslt;
 }
 
-#ifdef BME280_FLOAT_ENABLE
-/*!
- * @brief This internal API is used to compensate the raw temperature data and
- * return the compensated temperature data in double data type.
- */
-double bme280::compensate_temperature()
-{
-	double var1;
-	double var2;
-	double temperature;
-	double temperature_min = -40;
-	double temperature_max = 85;
-
-	var1 = ((double)m_data.m_uncomp_temperature) / 16384.0 - ((double)m_calib_data.m_T1) / 1024.0;
-	var1 = var1 * ((double)m_calib_data.m_T2);
-	var2 = (((double)m_data.m_uncomp_temperature) / 131072.0 - ((double)m_calib_data.m_T1) / 8192.0);
-	var2 = (var2 * var2) * ((double)m_calib_data.m_T3);
-	m_calib_data.m_t_fine = (int32_t)(var1 + var2);
-	temperature = (var1 + var2) / 5120.0;
-
-	if (temperature < temperature_min)
-		temperature = temperature_min;
-	else if (temperature > temperature_max)
-		temperature = temperature_max;
-
-	return temperature;
-}
-
-/*!
- * @brief This internal API is used to compensate the raw pressure data and
- * return the compensated pressure data in double data type.
- */
-double bme280::compensate_pressure()
-{
-	double var1;
-	double var2;
-	double var3;
-	double pressure;
-	double pressure_min = 30000.0;
-	double pressure_max = 110000.0;
-
-	var1 = ((double)m_calib_data.m_t_fine / 2.0) - 64000.0;
-	var2 = var1 * var1 * ((double)m_calib_data.m_P6) / 32768.0;
-	var2 = var2 + var1 * ((double)m_calib_data.m_P5) * 2.0;
-	var2 = (var2 / 4.0) + (((double)m_calib_data.m_P4) * 65536.0);
-	var3 = ((double)m_calib_data.m_P3) * var1 * var1 / 524288.0;
-	var1 = (var3 + ((double)m_calib_data.m_P2) * var1) / 524288.0;
-	var1 = (1.0 + var1 / 32768.0) * ((double)m_calib_data.m_P1);
-	/* avoid exception caused by division by zero */
-	if (var1) {
-		pressure = 1048576.0 - (double) m_data.m_uncomp_pressure;
-		pressure = (pressure - (var2 / 4096.0)) * 6250.0 / var1;
-		var1 = ((double)m_calib_data.m_P9) * pressure * pressure / 2147483648.0;
-		var2 = pressure * ((double)m_calib_data.m_P8) / 32768.0;
-		pressure = pressure + (var1 + var2 + ((double)m_calib_data.m_P7)) / 16.0;
-
-		if (pressure < pressure_min)
-			pressure = pressure_min;
-		else if (pressure > pressure_max)
-			pressure = pressure_max;
-	} else { /* Invalid case */
-		pressure = pressure_min;
-	}
-
-	return pressure;
-}
-
-/*!
- * @brief This internal API is used to compensate the raw humidity data and
- * return the compensated humidity data in double data type.
- */
-double bme280::compensate_humidity()
-{
-	double humidity;
-	double humidity_min = 0.0;
-	double humidity_max = 100.0;
-	double var1;
-	double var2;
-	double var3;
-	double var4;
-	double var5;
-	double var6;
-
-	var1 = ((double)m_calib_data.m_t_fine) - 76800.0;
-	var2 = (((double)m_calib_data.m_H4) * 64.0 + (((double)m_calib_data.m_H5) / 16384.0) * var1);
-	var3 = m_data.m_uncomp_humidity - var2;
-	var4 = ((double)m_calib_data.m_H2) / 65536.0;
-	var5 = (1.0 + (((double)m_calib_data.m_H3) / 67108864.0) * var1);
-	var6 = 1.0 + (((double)m_calib_data.m_H6) / 67108864.0) * var1 * var5;
-	var6 = var3 * var4 * (var5 * var6);
-	humidity = var6 * (1.0 - ((double)m_calib_data.m_H1) * var6 / 524288.0);
-
-	if (humidity > humidity_max)
-		humidity = humidity_max;
-	else if (humidity < humidity_min)
-		humidity = humidity_min;
-
-	return humidity;
-}
-
-#else
-/*!
- * @brief This internal API is used to compensate the raw temperature data and
- * return the compensated temperature data in integer data type.
- */
-int32_t bme280::compensate_temperature()
-{
-	int32_t var1;
-	int32_t var2;
-	int32_t temperature;
-	int32_t temperature_min = -4000;
-	int32_t temperature_max = 8500;
-
-	var1 = (int32_t)((m_data.m_uncomp_temperature / 8) - ((int32_t)m_calib_data.m_T1 * 2));
-	var1 = (var1 * ((int32_t)m_calib_data.m_T2)) / 2048;
-	var2 = (int32_t)((m_data.m_uncomp_temperature / 16) - ((int32_t)m_calib_data.m_T1));
-	var2 = (((var2 * var2) / 4096) * ((int32_t)m_calib_data.m_T3)) / 16384;
-	m_calib_data.m_t_fine = var1 + var2;
-	temperature = (m_calib_data.m_t_fine * 5 + 128) / 256;
-
-	if (temperature < temperature_min)
-		temperature = temperature_min;
-	else if (temperature > temperature_max)
-		temperature = temperature_max;
-
-	return temperature;
-}
-#ifdef BME280_64BIT_ENABLE
-/*!
- * @brief This internal API is used to compensate the raw pressure data and
- * return the compensated pressure data in integer data type with higher
- * accuracy.
- */
-uint32_t bme280::compensate_pressure()
-{
-	int64_t var1;
-	int64_t var2;
-	int64_t var3;
-	int64_t var4;
-	uint32_t pressure;
-	uint32_t pressure_min = 3000000;
-	uint32_t pressure_max = 11000000;
-
-	var1 = ((int64_t)m_calib_data.m_t_fine) - 128000;
-	var2 = var1 * var1 * (int64_t)m_calib_data.m_P6;
-	var2 = var2 + ((var1 * (int64_t)m_calib_data.m_P5) * 131072);
-	var2 = var2 + (((int64_t)m_calib_data.m_P4) * 34359738368);
-	var1 = ((var1 * var1 * (int64_t)m_calib_data.m_P3) / 256) + ((var1 * ((int64_t)m_calib_data.m_P2) * 4096));
-	var3 = ((int64_t)1) * 140737488355328;
-	var1 = (var3 + var1) * ((int64_t)m_calib_data.m_P1) / 8589934592;
-
-	/* To avoid divide by zero exception */
-	if (var1 != 0) {
-		var4 = 1048576 - m_data.m_uncomp_pressure;
-		var4 = (((var4 * 2147483648) - var2) * 3125) / var1;
-		var1 = (((int64_t)m_calib_data.m_P9) * (var4 / 8192) * (var4 / 8192)) / 33554432;
-		var2 = (((int64_t)m_calib_data.m_P8) * var4) / 524288;
-		var4 = ((var4 + var1 + var2) / 256) + (((int64_t)m_calib_data.m_P7) * 16);
-		pressure = (uint32_t)(((var4 / 2) * 100) / 128);
-
-		if (pressure < pressure_min)
-			pressure = pressure_min;
-		else if (pressure > pressure_max)
-			pressure = pressure_max;
-	} else {
-		pressure = pressure_min;
-	}
-
-	return pressure;
-}
-#else
-/*!
- * @brief This internal API is used to compensate the raw pressure data and
- * return the compensated pressure data in integer data type.
- */
-uint32_t bme280::compensate_pressure()
-{
-	int32_t var1;
-	int32_t var2;
-	int32_t var3;
-	int32_t var4;
-	uint32_t var5;
-	uint32_t pressure;
-	uint32_t pressure_min = 30000;
-	uint32_t pressure_max = 110000;
-
-	var1 = (((int32_t)m_calib_data.m_t_fine) / 2) - (int32_t)64000;
-	var2 = (((var1 / 4) * (var1 / 4)) / 2048) * ((int32_t)m_calib_data.m_P6);
-	var2 = var2 + ((var1 * ((int32_t)m_calib_data.m_P5)) * 2);
-	var2 = (var2 / 4) + (((int32_t)m_calib_data.m_P4) * 65536);
-	var3 = (m_calib_data.m_P3 * (((var1 / 4) * (var1 / 4)) / 8192)) / 8;
-	var4 = (((int32_t)m_calib_data.m_P2) * var1) / 2;
-	var1 = (var3 + var4) / 262144;
-	var1 = (((32768 + var1)) * ((int32_t)m_calib_data.m_P1)) / 32768;
-	 /* avoid exception caused by division by zero */
-	if (var1) {
-		var5 = (uint32_t)((uint32_t)1048576) - m_data.m_uncomp_pressure;
-		pressure = ((uint32_t)(var5 - (uint32_t)(var2 / 4096))) * 3125;
-		if (pressure < 0x80000000)
-			pressure = (pressure << 1) / ((uint32_t)var1);
-		else
-			pressure = (pressure / (uint32_t)var1) * 2;
-
-		var1 = (((int32_t)m_calib_data.m_P9) * ((int32_t)(((pressure / 8) * (pressure / 8)) / 8192))) / 4096;
-		var2 = (((int32_t)(pressure / 4)) * ((int32_t)m_calib_data.m_P8)) / 8192;
-		pressure = (uint32_t)((int32_t)pressure + ((var1 + var2 + m_calib_data.m_P7) / 16));
-
-		if (pressure < pressure_min)
-			pressure = pressure_min;
-		else if (pressure > pressure_max)
-			pressure = pressure_max;
-	} else {
-		pressure = pressure_min;
-	}
-
-	return pressure;
-}
-#endif
-
-/*!
- * @brief This internal API is used to compensate the raw humidity data and
- * return the compensated humidity data in integer data type.
- */
-uint32_t bme280::compensate_humidity()
-{
-	int32_t var1;
-	int32_t var2;
-	int32_t var3;
-	int32_t var4;
-	int32_t var5;
-	uint32_t humidity;
-	uint32_t humidity_max = 102400;
-
-	var1 = m_calib_data.m_t_fine - ((int32_t)76800);
-	var2 = (int32_t)(m_data.m_uncomp_humidity * 16384);
-	var3 = (int32_t)(((int32_t)m_calib_data.m_H4) * 1048576);
-	var4 = ((int32_t)m_calib_data.m_H5) * var1;
-	var5 = (((var2 - var3) - var4) + (int32_t)16384) / 32768;
-	var2 = (var1 * ((int32_t)m_calib_data.m_H6)) / 1024;
-	var3 = (var1 * ((int32_t)m_calib_data.m_H3)) / 2048;
-	var4 = ((var2 * (var3 + (int32_t)32768)) / 1024) + (int32_t)2097152;
-	var2 = ((var4 * ((int32_t)m_calib_data.m_H2)) + 8192) / 16384;
-	var3 = var5 * var2;
-	var4 = ((var3 / 32768) * (var3 / 32768)) / 128;
-	var5 = var3 - ((var4 * ((int32_t)m_calib_data.m_H1)) / 16);
-	var5 = (var5 < 0 ? 0 : var5);
-	var5 = (var5 > 419430400 ? 419430400 : var5);
-	humidity = (uint32_t)(var5 / 4096);
-
-	if (humidity > humidity_max)
-		humidity = humidity_max;
-
-	return humidity;
-}
-#endif
 
 /*!
  * @brief This internal API reads the calibration data from the sensor, parse
@@ -898,19 +625,19 @@ void bme280::interleave_reg_addr(const uint8_t *reg_addr, uint8_t *temp_buff, co
  */
 void bme280::parse_temp_press_calib_data(const uint8_t *reg_data)
 {
-	m_calib_data.m_T1 = BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
-	m_calib_data.m_T2 = (int16_t)BME280_CONCAT_BYTES(reg_data[3], reg_data[2]);
-	m_calib_data.m_T3 = (int16_t)BME280_CONCAT_BYTES(reg_data[5], reg_data[4]);
-	m_calib_data.m_P1 = BME280_CONCAT_BYTES(reg_data[7], reg_data[6]);
-	m_calib_data.m_P2 = (int16_t)BME280_CONCAT_BYTES(reg_data[9], reg_data[8]);
-	m_calib_data.m_P3 = (int16_t)BME280_CONCAT_BYTES(reg_data[11], reg_data[10]);
-	m_calib_data.m_P4 = (int16_t)BME280_CONCAT_BYTES(reg_data[13], reg_data[12]);
-	m_calib_data.m_P5 = (int16_t)BME280_CONCAT_BYTES(reg_data[15], reg_data[14]);
-	m_calib_data.m_P6 = (int16_t)BME280_CONCAT_BYTES(reg_data[17], reg_data[16]);
-	m_calib_data.m_P7 = (int16_t)BME280_CONCAT_BYTES(reg_data[19], reg_data[18]);
-	m_calib_data.m_P8 = (int16_t)BME280_CONCAT_BYTES(reg_data[21], reg_data[20]);
-	m_calib_data.m_P9 = (int16_t)BME280_CONCAT_BYTES(reg_data[23], reg_data[22]);
-	m_calib_data.m_H1 = reg_data[25];
+	m_data.returnCalibData().m_T1 = BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
+	m_data.returnCalibData().m_T2 = (int16_t)BME280_CONCAT_BYTES(reg_data[3], reg_data[2]);
+	m_data.returnCalibData().m_T3 = (int16_t)BME280_CONCAT_BYTES(reg_data[5], reg_data[4]);
+	m_data.returnCalibData().m_P1 = BME280_CONCAT_BYTES(reg_data[7], reg_data[6]);
+	m_data.returnCalibData().m_P2 = (int16_t)BME280_CONCAT_BYTES(reg_data[9], reg_data[8]);
+	m_data.returnCalibData().m_P3 = (int16_t)BME280_CONCAT_BYTES(reg_data[11], reg_data[10]);
+	m_data.returnCalibData().m_P4 = (int16_t)BME280_CONCAT_BYTES(reg_data[13], reg_data[12]);
+	m_data.returnCalibData().m_P5 = (int16_t)BME280_CONCAT_BYTES(reg_data[15], reg_data[14]);
+	m_data.returnCalibData().m_P6 = (int16_t)BME280_CONCAT_BYTES(reg_data[17], reg_data[16]);
+	m_data.returnCalibData().m_P7 = (int16_t)BME280_CONCAT_BYTES(reg_data[19], reg_data[18]);
+	m_data.returnCalibData().m_P8 = (int16_t)BME280_CONCAT_BYTES(reg_data[21], reg_data[20]);
+	m_data.returnCalibData().m_P9 = (int16_t)BME280_CONCAT_BYTES(reg_data[23], reg_data[22]);
+	m_data.returnCalibData().m_H1 = reg_data[25];
 }
 
 /*!
@@ -923,15 +650,15 @@ void bme280::parse_humidity_calib_data(const uint8_t *reg_data)
 	int16_t m_H4_msb{0};
 	int16_t m_H5_lsb{0};
 	int16_t m_H5_msb{0};
-	m_calib_data.m_H2 = (int16_t)BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
-	m_calib_data.m_H3 = reg_data[2];
+	m_data.returnCalibData().m_H2 = (int16_t)BME280_CONCAT_BYTES(reg_data[1], reg_data[0]);
+	m_data.returnCalibData().m_H3 = reg_data[2];
 	m_H4_msb = (int16_t)(int8_t)reg_data[3] * 16;
 	m_H4_lsb = (int16_t)(reg_data[4] & 0x0F);
-	m_calib_data.m_H4 = m_H4_msb | m_H4_lsb;
+	m_data.returnCalibData().m_H4 = m_H4_msb | m_H4_lsb;
 	m_H5_msb = (int16_t)(int8_t)reg_data[5] * 16;
 	m_H5_lsb = (int16_t)(reg_data[4] >> 4);
-	m_calib_data.m_H5 = m_H5_msb | m_H5_lsb;
-	m_calib_data.m_H6 = (int8_t)reg_data[6];
+	m_data.returnCalibData().m_H5 = m_H5_msb | m_H5_lsb;
+	m_data.returnCalibData().m_H6 = (int8_t)reg_data[6];
 }
 
 /*!

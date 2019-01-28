@@ -14,12 +14,12 @@
 #include <sys/types.h>
 #include <fcntl.h>
 
-void print_sensor_data(bme280& bm)
+void print_sensor_data(data& dat)
 {
 #ifdef BME280_FLOAT_ENABLE
-  printf("temp %0.2f, p %0.2f, hum %0.2f\r\n",bm.getTemperature(), bm.getPressure(), bm.getHumidity());
+  printf("temp %0.2f, p %0.2f, hum %0.2f\r\n",dat.getTemperature(), dat.getPressure(), dat.getHumidity());
 #else
-  printf("temp %ld, p %ld, hum %ld\r\n",bm.getTemperature(),bm.getPressure(),bm.getHumidity());
+  printf("temp %ld, p %ld, hum %ld\r\n",dat.getTemperature(),dat.getPressure(),dat.getHumidity());
 #endif
 }
 
@@ -37,7 +37,7 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
     /* Wait for the measurement to complete and print data @25Hz */
     bm.delay_ms(40);
     rslt = bm.bme280_get_sensor_data(BME280_ALL);
-    print_sensor_data(bm);
+    print_sensor_data(bm.getData());
   }
   return rslt;
 }
@@ -56,6 +56,5 @@ int main(int argc, char* argv[])
   int8_t rslt = BME280_OK;
 
   rslt = bm.bme280_init();
-  bm.printCalibParameters();
   stream_sensor_data_forced_mode(bm);
 }
