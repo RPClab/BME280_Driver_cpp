@@ -73,12 +73,8 @@ int8_t bme280::bme280_init()
 	/* chip id read try count */
 	uint8_t try_count = 5;
 	uint8_t chip_id = 0;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-	/* Proceed if null check is fine */
-	if (rslt ==  BME280_OK) {
-		while (try_count) {
+    while (try_count) 
+    {
 			/* Read the chip-id of bme280 sensor */
 			rslt = bme280_get_regs(BME280_CHIP_ID_ADDR, &chip_id, 1);
 			/* Check for chip id validity */
@@ -95,12 +91,9 @@ int8_t bme280::bme280_init()
 			/* Wait for 1 ms */
 			delay_ms(1);
 			--try_count;
-		}
-		/* Chip id check failed */
-		if (!try_count)
-			rslt = BME280_E_DEV_NOT_FOUND;
-	}
-
+    }
+    /* Chip id check failed */
+    if (!try_count) rslt = BME280_E_DEV_NOT_FOUND;
 	return rslt;
 }
 
@@ -110,21 +103,12 @@ int8_t bme280::bme280_init()
 int8_t bme280::bme280_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len)
 {
 	int8_t rslt;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-	/* Proceed if null check is fine */
-	if (rslt == BME280_OK) {
-		/* If interface selected is SPI */
-		if (m_IO->getInterfaceName()!= "I2C")
-			reg_addr = reg_addr | 0x80;
-		/* Read the data  */
-		rslt = m_IO->read(reg_addr, reg_data, len);
-		/* Check for communication error */
-		if (rslt != BME280_OK)
-			rslt = BME280_E_COMM_FAIL;
-	}
-
+    /* If interface selected is SPI */
+    if (m_IO->getInterfaceName()!= "I2C") reg_addr = reg_addr | 0x80;
+    /* Read the data  */
+    rslt = m_IO->read(reg_addr, reg_data, len);
+    /* Check for communication error */
+    if (rslt != BME280_OK) rslt = BME280_E_COMM_FAIL;
 	return rslt;
 }
 
@@ -137,20 +121,15 @@ int8_t bme280::bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8
 	int8_t rslt;
 	uint8_t temp_buff[20]; /* Typically not to write more than 10 registers */
 
-	if (len > 10)
-		len = 10;
+	if (len > 10) len = 10;
 
 	uint16_t temp_len;
 	uint8_t reg_addr_cnt;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-	/* Check for arguments validity */
-	if ((rslt ==  BME280_OK) && (reg_addr != nullptr) && (reg_data != nullptr)) {
-		if (len != 0) {
-			temp_buff[0] = reg_data[0];
-			/* If interface selected is SPI */
-			if (m_IO->getInterfaceName() !="I2C") {
+    if (len != 0) 
+    {
+        temp_buff[0] = reg_data[0];
+        /* If interface selected is SPI */
+        if (m_IO->getInterfaceName() !="I2C") {
 				for (reg_addr_cnt = 0; reg_addr_cnt < len; reg_addr_cnt++)
 					reg_addr[reg_addr_cnt] = reg_addr[reg_addr_cnt] & 0x7F;
 			}
@@ -167,14 +146,11 @@ int8_t bme280::bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8
 			/* Check for communication error */
 			if (rslt != BME280_OK)
 				rslt = BME280_E_COMM_FAIL;
-		} else {
-			rslt = BME280_E_INVALID_LEN;
-		}
-	} else {
-		rslt = BME280_E_NULL_PTR;
-	}
-
-
+    } 
+    else 
+    {
+        rslt = BME280_E_INVALID_LEN;
+    }
 	return rslt;
 }
 
@@ -186,26 +162,19 @@ int8_t bme280::bme280_set_sensor_settings(uint8_t desired_settings)
 {
 	int8_t rslt;
 	uint8_t sensor_mode;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-	/* Proceed if null check is fine */
-	if (rslt == BME280_OK) {
-		rslt = bme280_get_sensor_mode(&sensor_mode);
-		if ((rslt == BME280_OK) && (sensor_mode != BME280_SLEEP_MODE))
-			rslt = put_device_to_sleep();
-		if (rslt == BME280_OK) {
-			/* Check if user wants to change oversampling
-			   settings */
-			if (are_settings_changed(OVERSAMPLING_SETTINGS, desired_settings))
-				rslt = set_osr_settings(desired_settings);
-			/* Check if user wants to change filter and/or
-			   standby settings */
-			if ((rslt == BME280_OK) && are_settings_changed(FILTER_STANDBY_SETTINGS, desired_settings))
-				rslt = set_filter_standby_settings(desired_settings);
-		}
-	}
-
+    rslt = bme280_get_sensor_mode(&sensor_mode);
+    if ((rslt == BME280_OK) && (sensor_mode != BME280_SLEEP_MODE))
+        rslt = put_device_to_sleep();
+    if (rslt == BME280_OK) {
+        /* Check if user wants to change oversampling
+            settings */
+        if (are_settings_changed(OVERSAMPLING_SETTINGS, desired_settings))
+            rslt = set_osr_settings(desired_settings);
+        /* Check if user wants to change filter and/or
+            standby settings */
+        if ((rslt == BME280_OK) && are_settings_changed(FILTER_STANDBY_SETTINGS, desired_settings))
+            rslt = set_filter_standby_settings(desired_settings);
+    }
 	return rslt;
 }
 
@@ -217,16 +186,8 @@ int8_t bme280::bme280_get_sensor_settings()
 {
 	int8_t rslt;
 	uint8_t reg_data[4];
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-	/* Proceed if null check is fine */
-	if (rslt == BME280_OK) {
-		rslt = bme280_get_regs(BME280_CTRL_HUM_ADDR, reg_data, 4);
-		if (rslt == BME280_OK)
-			parse_device_settings(reg_data);
-	}
-
+    rslt = bme280_get_regs(BME280_CTRL_HUM_ADDR, reg_data, 4);
+    if (rslt == BME280_OK)parse_device_settings(reg_data);
 	return rslt;
 }
 
@@ -237,21 +198,13 @@ int8_t bme280::bme280_set_sensor_mode(uint8_t sensor_mode)
 {
 	int8_t rslt;
 	uint8_t last_set_mode;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-
-	if (rslt == BME280_OK) {
-		rslt = bme280_get_sensor_mode(&last_set_mode);
-		/* If the sensor is not in sleep mode put the device to sleep
-		   mode */
-		if ((rslt == BME280_OK) && (last_set_mode != BME280_SLEEP_MODE))
-			rslt = put_device_to_sleep();
-		/* Set the power mode */
-		if (rslt == BME280_OK)
-			rslt = write_power_mode(sensor_mode);
-	}
-
+    rslt = bme280_get_sensor_mode(&last_set_mode);
+    /* If the sensor is not in sleep mode put the device to sleep mode */
+    if ((rslt == BME280_OK) && (last_set_mode != BME280_SLEEP_MODE))
+        rslt = put_device_to_sleep();
+    /* Set the power mode */
+    if (rslt == BME280_OK)
+        rslt = write_power_mode(sensor_mode);
 	return rslt;
 }
 
@@ -261,17 +214,10 @@ int8_t bme280::bme280_set_sensor_mode(uint8_t sensor_mode)
 int8_t bme280::bme280_get_sensor_mode(uint8_t *sensor_mode)
 {
 	int8_t rslt;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-
-	if (rslt == BME280_OK) {
-		/* Read the power mode register */
-		rslt = bme280_get_regs(BME280_PWR_CTRL_ADDR, sensor_mode, 1);
-		/* Assign the power mode in the device structure */
+    /* Read the power mode register */
+    rslt = bme280_get_regs(BME280_PWR_CTRL_ADDR, sensor_mode, 1);
+    /* Assign the power mode in the device structure */
 		*sensor_mode = BME280_GET_BITS_POS_0(*sensor_mode, BME280_SENSOR_MODE);
-	}
-
 	return rslt;
 }
 
@@ -284,17 +230,10 @@ int8_t bme280::bme280_soft_reset()
 	uint8_t reg_addr = BME280_RESET_ADDR;
 	/* 0xB6 is the soft reset command */
 	uint8_t soft_rst_cmd = 0xB6;
-
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
-	/* Proceed if null check is fine */
-	if (rslt == BME280_OK) {
-		/* Write the soft reset command in the sensor */
-		rslt = bme280_set_regs(&reg_addr, &soft_rst_cmd, 1);
-		/* As per data sheet, startup time is 2 ms. */
-		delay_ms(2);
-	}
-
+    /* Write the soft reset command in the sensor */
+    rslt = bme280_set_regs(&reg_addr, &soft_rst_cmd, 1);
+    /* As per data sheet, startup time is 2 ms. */
+    delay_ms(2);
 	return rslt;
 }
 
@@ -309,27 +248,17 @@ int8_t bme280::bme280_get_sensor_data(uint8_t sensor_comp)
 	/* Array to store the pressure, temperature and humidity data read from
 	the sensor */
 	uint8_t reg_data[BME280_P_T_H_DATA_LEN] = {0};
-	/* Check for null pointer in the device structure*/
-	rslt = null_ptr_check();
+    /* Read the pressure and temperature data from the sensor */
+    rslt = bme280_get_regs(BME280_DATA_ADDR, reg_data, BME280_P_T_H_DATA_LEN);
 
-	if ((rslt == BME280_OK)) 
+    if (rslt == BME280_OK) 
     {
-		/* Read the pressure and temperature data from the sensor */
-		rslt = bme280_get_regs(BME280_DATA_ADDR, reg_data, BME280_P_T_H_DATA_LEN);
-
-		if (rslt == BME280_OK) {
-			/* Parse the read data from the sensor */
-			bme280_parse_sensor_data(reg_data);
-			/* Compensate the pressure and/or temperature and/or
-			   humidity data from the sensor */
-			rslt = bme280_compensate_data(sensor_comp);
-		}
-	} 
-	else 
-    {
-		rslt = BME280_E_NULL_PTR;
-	}
-
+        /* Parse the read data from the sensor */
+        bme280_parse_sensor_data(reg_data);
+        /* Compensate the pressure and/or temperature and/or
+            humidity data from the sensor */
+        rslt = bme280_compensate_data(sensor_comp);
+    }
 	return rslt;
 }
 
@@ -675,23 +604,4 @@ uint8_t bme280::are_settings_changed(uint8_t sub_settings, uint8_t desired_setti
 	}
 
 	return settings_changed;
-}
-
-/*!
- * @brief This internal API is used to validate the device structure pointer for
- * null conditions.
- */
-int8_t bme280::null_ptr_check()
-{
-	int8_t rslt;
-
-	if (m_IO == nullptr) {
-		/* Device structure pointer is not valid */
-		rslt = BME280_E_NULL_PTR;
-	} else {
-		/* Device structure is fine */
-		rslt = BME280_OK;
-	}
-
-	return rslt;
 }

@@ -75,10 +75,6 @@
 #endif
 #endif
 
-/**\name I2C addresses */
-#define BME280_I2C_ADDR_PRIM	uint8_t(0x76)
-#define BME280_I2C_ADDR_SEC		uint8_t(0x77)
-
 /**\name BME280 chip identifier */
 #define BME280_CHIP_ID  uint8_t(0x60)
 

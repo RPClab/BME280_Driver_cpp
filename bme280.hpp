@@ -357,15 +357,6 @@ private:
     int8_t write_power_mode(uint8_t sensor_mode);
 
     /*!
-    * @brief This internal API is used to validate the device pointer for
-    * null conditions.
-    *
-    * @return Result of API execution status
-    * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
-    */
-    int8_t null_ptr_check();
-
-    /*!
     * @brief This internal API interleaves the register address between the
     * register data buffer for burst write operation.
     *

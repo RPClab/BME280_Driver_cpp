@@ -12,8 +12,12 @@ class I2C : public IO
 public:
     I2C(const std::string& path,const std::string& adress):m_path(path)
     {
-        m_adress=static_cast<uint8_t>(std::stoi(adress,0,16));
-        m_interfaceName="I2C";
+        if(adress=="0x76"||adress=="0x77")
+        {
+            m_adress=static_cast<uint8_t>(std::stoi(adress,0,16));
+            m_interfaceName="I2C";
+        }
+        else std::exit(15);
     };
     virtual int8_t read(uint8_t reg_addr,uint8_t *data, uint16_t len)
     {
