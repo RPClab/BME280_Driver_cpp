@@ -181,7 +181,7 @@ public:
     *  @return Result of API execution status
     *  @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_init();
+    int8_t init();
 
     /*!
     * @brief This API writes the given data to the register address
@@ -195,7 +195,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8_t len);
+    int8_t set_regs(uint8_t *reg_addr, const uint8_t *reg_data, uint8_t len);
 
     /*!
     * @brief This API reads the data from the given register address of the sensor.
@@ -207,7 +207,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
+    int8_t get_regs(uint8_t reg_addr, uint8_t *reg_data, uint16_t len);
 
     /*!
     * @brief This API sets the oversampling, filter and standby duration
@@ -231,7 +231,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error.
     */
-    int8_t bme280_set_sensor_settings(uint8_t desired_settings);
+    int8_t set_sensor_settings(uint8_t desired_settings);
 
     /*!
     * @brief This API gets the oversampling, filter and standby duration
@@ -240,7 +240,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error.
     */
-    int8_t bme280_get_sensor_settings();
+    int8_t get_sensor_settings();
 
     /*!
     * @brief This API sets the power mode of the sensor.
@@ -256,7 +256,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_set_sensor_mode(uint8_t sensor_mode);
+    int8_t set_sensor_mode(uint8_t sensor_mode);
 
     /*!
     * @brief This API gets the power mode of the sensor.
@@ -272,7 +272,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_get_sensor_mode(uint8_t *sensor_mode);
+    int8_t get_sensor_mode(uint8_t *sensor_mode);
 
     /*!
     * @brief This API performs the soft reset of the sensor.
@@ -280,7 +280,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error.
     */
-    int8_t bme280_soft_reset();
+    int8_t soft_reset();
 
     /*!
     * @brief This API reads the pressure, temperature and humidity data from the
@@ -302,7 +302,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_get_sensor_data(uint8_t sensor_comp);
+    int8_t get_sensor_data(uint8_t sensor_comp);
 
     /*!
     *  @brief This API is used to parse the pressure, temperature and
@@ -312,7 +312,7 @@ public:
     *  @param[out] uncomp_data : Contains the uncompensated pressure, temperature
     *  and humidity data.
     */
-    void bme280_parse_sensor_data(const uint8_t *reg_data);
+    void parse_sensor_data(const uint8_t *reg_data);
 
     /*!
     * @brief This API is used to compensate the pressure and/or
@@ -329,7 +329,7 @@ public:
     * @return Result of API execution status.
     * @retval zero -> Success / -ve value -> Error
     */
-    int8_t bme280_compensate_data(uint8_t sensor_comp);
+    int8_t compensate_data(uint8_t sensor_comp);
     IO* m_IO{nullptr};
     /*! Sensor settings */
 	settings m_settings;
@@ -511,6 +511,5 @@ private:
     */
     int8_t reload_device_settings();
 };
-
 #endif /* BME280_H_ */
 /** @}*/

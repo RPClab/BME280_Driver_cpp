@@ -20,14 +20,14 @@ int8_t stream_sensor_data_forced_mode(bme280& bm)
 {
   int8_t rslt;
   uint8_t settings_sel;
-  settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
-  rslt = bm.bme280_set_sensor_settings(settings_sel);
+  settings_sel = OSR_PRESS_SEL | OSR_TEMP_SEL | OSR_HUM_SEL | FILTER_SEL;
+  rslt = bm.set_sensor_settings(settings_sel);
   printf("Temperature, Pressure, Humidity\r\n");
   /* Continuously stream sensor data */
-rslt = bm.bme280_set_sensor_mode(BME280_FORCED_MODE);
+rslt = bm.set_sensor_mode(FORCED_MODE);
     /* Wait for the measurement to complete and print data @25Hz */
 bm.delay_ms(40);
-    rslt = bm.bme280_get_sensor_data(BME280_ALL);
+    rslt = bm.get_sensor_data(ALL);
     print_sensor_data(bm.getData());
   return rslt;
 }
@@ -45,9 +45,9 @@ int main(int argc, char* argv[])
   i2c2.connect();
   bme280 bm(i2c,setting);
   bme280 bm2(i2c2,setting);
-  int8_t rslt = BME280_OK;
-  rslt = bm.bme280_init();
-  rslt = bm2.bme280_init();
+  int8_t rslt = OK;
+  rslt = bm.init();
+  rslt = bm2.init();
   stream_sensor_data_forced_mode(bm);
   stream_sensor_data_forced_mode(bm2);
 }
