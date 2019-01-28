@@ -249,38 +249,47 @@ public:
  * @brief bme280 sensor structure which comprises of temperature, pressure and
  * humidity data
  */
-class bme280_data {
+class data 
+{
 public:
+    void reset()
+    {
+        resetUncompensated();
+        resetCompensated();
+    }
+    void resetUncompensated()
+    {
+        m_uncomp_pressure={0};
+        m_uncomp_temperature={0};
+        m_uncomp_humidity={0};
+    }
+    void resetCompensated()
+    {
+        m_pressure={0};
+        m_temperature={0};
+        m_humidity={0};
+    }
     #ifdef BME280_FLOAT_ENABLE
 	/*! Compensated pressure */
-	double pressure;
+	double m_pressure;
 	/*! Compensated temperature */
-	double temperature;
+	double m_temperature;
 	/*! Compensated humidity */
-	double humidity;
+	double m_humidity;
     #else
     /*! Compensated pressure */
-	uint32_t pressure;
+	uint32_t m_pressure;
 	/*! Compensated temperature */
-	int32_t temperature;
+	int32_t m_temperature;
 	/*! Compensated humidity */
-	uint32_t humidity;
+	uint32_t m_humidity;
     #endif /* BME280_USE_FLOATING_POINT */
-};
-
-
-/*!
- * @brief bme280 sensor structure which comprises of uncompensated temperature,
- * pressure and humidity data
- */
-class bme280_uncomp_data {
-public:
-	/*! un-compensated pressure */
-	uint32_t pressure;
+    /*! un-compensated pressure */
+	uint32_t m_uncomp_pressure;
 	/*! un-compensated temperature */
-	uint32_t temperature;
+	uint32_t m_uncomp_temperature;
 	/*! un-compensated humidity */
-	uint32_t humidity;
+	uint32_t m_uncomp_humidity;
 };
 
 /*!

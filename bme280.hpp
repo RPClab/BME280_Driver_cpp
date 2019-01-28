@@ -172,6 +172,33 @@ public:
     {
         m_calib_data.printCalibParameters();
     }
+    #ifdef BME280_FLOAT_ENABLE
+    double getTemperature()
+    {
+        return m_data.m_temperature;
+    }
+    double getPressure()
+    {
+        return m_data.m_pressure;
+    }
+    double getHumidity()
+    {
+        return m_data.m_humidity;
+    }
+    #else
+    uint32_t getTemperature()
+    {
+        return m_data.m_temperature;
+    }
+    uint32_t getPressure()
+    {
+        return m_data.m_pressure;
+    }
+    uint32_t getHumidity()
+    {
+        return m_data.m_humidity;
+    }
+    #endif
     void delay_ms(uint32_t period);
     /*!
     *  @brief This API is the entry point.
@@ -301,7 +328,7 @@ public:
     * @return Result of API execution status
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
-    int8_t bme280_get_sensor_data(uint8_t sensor_comp, struct bme280_data *comp_data);
+    int8_t bme280_get_sensor_data(uint8_t sensor_comp);
 
     /*!
     *  @brief This API is used to parse the pressure, temperature and
@@ -311,7 +338,7 @@ public:
     *  @param[out] uncomp_data : Contains the uncompensated pressure, temperature
     *  and humidity data.
     */
-    void bme280_parse_sensor_data(const uint8_t *reg_data, struct bme280_uncomp_data *uncomp_data);
+    void bme280_parse_sensor_data(const uint8_t *reg_data);
 
     /*!
     * @brief This API is used to compensate the pressure and/or
@@ -328,7 +355,7 @@ public:
     * @return Result of API execution status.
     * @retval zero -> Success / -ve value -> Error
     */
-    int8_t bme280_compensate_data(uint8_t sensor_comp, const struct bme280_uncomp_data *uncomp_data,struct bme280_data *comp_data);
+    int8_t bme280_compensate_data(uint8_t sensor_comp);
     IO* m_IO{nullptr};
     /*! Sensor settings */
 	settings m_settings;
@@ -337,7 +364,7 @@ private:
     /*! Chip Id */
 	uint8_t m_chip_id;
     calib_data m_calib_data;
-    
+    data m_data;
     /*!
     * @brief This internal API puts the device to sleep mode.
     *
@@ -413,7 +440,7 @@ private:
     * @return Compensated pressure data.
     * @retval Compensated pressure data in double.
     */
-    double compensate_pressure(const struct bme280_uncomp_data *uncomp_data);
+    double compensate_pressure();
 
     /*!
     * @brief This internal API is used to compensate the raw humidity data and
@@ -424,7 +451,7 @@ private:
     * @return Compensated humidity data.
     * @retval Compensated humidity data in double.
     */
-    double compensate_humidity(const struct bme280_uncomp_data *uncomp_data);
+    double compensate_humidity();
 
     /*!
     * @brief This internal API is used to compensate the raw temperature data and
@@ -435,7 +462,7 @@ private:
     * @return Compensated temperature data.
     * @retval Compensated temperature data in double.
     */
-    double compensate_temperature(const struct bme280_uncomp_data *uncomp_data);
+    double compensate_temperature();
 
     #else
 
@@ -448,7 +475,7 @@ private:
     * @return Compensated temperature data.
     * @retval Compensated temperature data in integer.
     */
-    int32_t compensate_temperature(const struct bme280_uncomp_data *uncomp_data);
+    int32_t compensate_temperature();
 
     /*!
     * @brief This internal API is used to compensate the raw pressure data and
@@ -459,7 +486,7 @@ private:
     * @return Compensated pressure data.
     * @retval Compensated pressure data in integer.
     */
-    uint32_t compensate_pressure(const struct bme280_uncomp_data *uncomp_data);
+    uint32_t compensate_pressure();
 
     /*!
     * @brief This internal API is used to compensate the raw humidity data and
@@ -470,7 +497,7 @@ private:
     * @return Compensated humidity data.
     * @retval Compensated humidity data in integer.
     */
-    uint32_t compensate_humidity(const struct bme280_uncomp_data *uncomp_data);
+    uint32_t compensate_humidity();
 
     #endif
 
