@@ -1,6 +1,8 @@
 /*! @file bme280.c
     @brief Sensor driver for BME280 sensor */
 #include "bme280.hpp"
+#include <chrono>
+#include <thread>
 
 void bme280::delay_ms(uint32_t period)
 {
