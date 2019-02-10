@@ -21,29 +21,29 @@
 #endif
 
 /**\name BME280 chip identifier */
-#define CHIP_ID  uint8_t(0x60)
+static constexpr uint8_t CHIP_ID{0x60};
 
 /**\name Register Address */
-#define CHIP_ID_ADDR					uint8_t(0xD0)
-#define RESET_ADDR					uint8_t(0xE0)
-#define TEMP_PRESS_CALIB_DATA_ADDR	uint8_t(0x88)
-#define HUMIDITY_CALIB_DATA_ADDR		uint8_t(0xE1)
-#define PWR_CTRL_ADDR				uint8_t(0xF4)
-#define CTRL_HUM_ADDR				uint8_t(0xF2)
-#define CTRL_MEAS_ADDR				uint8_t(0xF4)
-#define CONFIG_ADDR					uint8_t(0xF5)
-#define DATA_ADDR					uint8_t(0xF7)
+static constexpr uint8_t CHIP_ID_ADDR{0xD0};
+static constexpr uint8_t RESET_ADDR{0xE0};
+static constexpr uint8_t TEMP_PRESS_CALIB_DATA_ADDR{0x88};
+static constexpr uint8_t HUMIDITY_CALIB_DATA_ADDR{0xE1};
+static constexpr uint8_t PWR_CTRL_ADDR{0xF4};
+static constexpr uint8_t CTRL_HUM_ADDR{0xF2};
+static constexpr uint8_t CTRL_MEAS_ADDR{0xF4};
+static constexpr uint8_t CONFIG_ADDR{0xF5};
+static constexpr uint8_t DATA_ADDR{0xF7};
 
 
 /**\name Macros related to size */
-#define TEMP_PRESS_CALIB_DATA_LEN	uint8_t(26)
-#define HUMIDITY_CALIB_DATA_LEN		uint8_t(7)
-#define P_T_H_DATA_LEN				uint8_t(8)
+static constexpr uint8_t TEMP_PRESS_CALIB_DATA_LEN{26};
+static constexpr uint8_t HUMIDITY_CALIB_DATA_LEN{7};
+static constexpr uint8_t P_T_H_DATA_LEN{8};
 
 /**\name Sensor power modes */
-#define	SLEEP_MODE		uint8_t(0x00)
-#define	FORCED_MODE		uint8_t(0x01)
-#define	NORMAL_MODE		uint8_t(0x03)
+static constexpr	uint8_t SLEEP_MODE{0x00};
+static constexpr	uint8_t FORCED_MODE{0x01};
+static constexpr	uint8_t NORMAL_MODE{0x03};
 
 /**\name Macro to combine two 8 bit data's to form a 16 bit data */
 #define CONCAT_BYTES(msb, lsb)     (((uint16_t)msb << 8) | (uint16_t)lsb)
@@ -60,39 +60,39 @@
 #define GET_BITS_POS_0(reg_data, bitname)  (reg_data & (bitname##_MSK))
 
 /**\name Macros for bit masking */
-#define SENSOR_MODE_MSK	uint8_t(0x03)
-#define SENSOR_MODE_POS	uint8_t(0x00)
+static constexpr uint8_t SENSOR_MODE_MSK{0x03};
+static constexpr uint8_t SENSOR_MODE_POS{0x00};
 
-#define CTRL_HUM_MSK		uint8_t(0x07)
-#define CTRL_HUM_POS		uint8_t(0x00)
+static constexpr uint8_t CTRL_HUM_MSK{0x07};
+static constexpr uint8_t CTRL_HUM_POS{0x00};
 
-#define CTRL_PRESS_MSK	uint8_t(0x1C)
-#define CTRL_PRESS_POS	uint8_t(0x02)
+static constexpr uint8_t CTRL_PRESS_MSK{0x1C};
+static constexpr uint8_t CTRL_PRESS_POS{0x02};
 
-#define CTRL_TEMP_MSK	uint8_t(0xE0)
-#define CTRL_TEMP_POS	uint8_t(0x05)
+static constexpr uint8_t CTRL_TEMP_MSK{0xE0};
+static constexpr uint8_t CTRL_TEMP_POS{0x05};
 
-#define FILTER_MSK		uint8_t(0x1C)
-#define FILTER_POS		uint8_t(0x02)
+static constexpr uint8_t FILTER_MSK{0x1C};
+static constexpr uint8_t FILTER_POS{0x02};
 
-#define STANDBY_MSK		uint8_t(0xE0)
-#define STANDBY_POS		uint8_t(0x05)
+static constexpr uint8_t STANDBY_MSK{0xE0};
+static constexpr uint8_t STANDBY_POS{0x05};
 
 /**\name Sensor component selection macros
    These values are internal for API implementation. Don't relate this to
    data sheet.*/
-#define PRESS		uint8_t(1)
-#define TEMP			uint8_t(1 << 1)
-#define HUM			uint8_t(1 << 2)
-#define ALL			uint8_t(0x07)
+static constexpr uint8_t PRESS{1};
+static constexpr uint8_t TEMP{1 << 1};
+static constexpr uint8_t HUM{1 << 2};
+static constexpr uint8_t ALL{0x07};
 
 /**\name Settings selection macros */
-#define OSR_PRESS_SEL		uint8_t(1)
-#define OSR_TEMP_SEL			uint8_t(1 << 1)
-#define OSR_HUM_SEL			uint8_t(1 << 2)
-#define FILTER_SEL			uint8_t(1 << 3)
-#define STANDBY_SEL			uint8_t(1 << 4)
-#define ALL_SETTINGS_SEL		uint8_t(0x1F)
+static constexpr uint8_t OSR_PRESS_SEL{1};
+static constexpr uint8_t OSR_TEMP_SEL{1 << 1};
+static constexpr uint8_t OSR_HUM_SEL{1 << 2};
+static constexpr uint8_t FILTER_SEL{1 << 3};
+static constexpr uint8_t STANDBY_SEL{1 << 4};
+static constexpr uint8_t ALL_SETTINGS_SEL{0x1F};
 
 class bme280
 {
