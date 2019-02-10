@@ -34,18 +34,6 @@
 #define CONFIG_ADDR					uint8_t(0xF5)
 #define DATA_ADDR					uint8_t(0xF7)
 
-/**\name API success code */
-#define OK					int8_t(0)
-
-/**\name API error codes */
-#define E_NULL_PTR			int8_t(-1)
-#define E_DEV_NOT_FOUND		int8_t(-2)
-#define E_INVALID_LEN		int8_t(-3)
-#define E_COMM_FAIL			int8_t(-4)
-#define E_SLEEP_MODE_FAIL	int8_t(-5)
-
-/**\name API warning codes */
-#define W_INVALID_OSR_MACRO      int8_t(1)
 
 /**\name Macros related to size */
 #define TEMP_PRESS_CALIB_DATA_LEN	uint8_t(26)
@@ -451,5 +439,25 @@ private:
     * @retval zero -> Success / +ve value -> Warning / -ve value -> Error
     */
     int8_t reload_device_settings();
+    
+    /**\name API success code */
+    static constexpr int8_t OK{0};
+
+    /**\name API error codes */
+    static constexpr int8_t E_NULL_PTR{-1};
+    static constexpr int8_t E_DEV_NOT_FOUND{-2};
+    static constexpr int8_t E_INVALID_LEN{-3};
+    static constexpr int8_t E_COMM_FAIL{-4};
+    static constexpr int8_t E_SLEEP_MODE_FAIL{-5};
+    
+    /**\name API warning codes */
+    static constexpr int8_t W_INVALID_OSR_MACRO{1};
+    
+    /**\name Internal macros */
+    /* To identify osr settings selected by user */
+    static constexpr uint8_t OVERSAMPLING_SETTINGS{0x07};
+    /* To identify filter and standby settings selected by user */
+    static constexpr uint8_t FILTER_STANDBY_SETTINGS{0x18};
+    
 };
 #endif

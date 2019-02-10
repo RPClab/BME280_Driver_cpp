@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
   i2c2.connect();
   bme280 bm(i2c,setting);
   bme280 bm2(i2c2,setting);
-  int8_t rslt = OK;
+  int8_t rslt;
   rslt = bm.init();
   rslt = bm2.init();
   stream_sensor_data_forced_mode(bm);

@@ -9,13 +9,6 @@ void bme280::delay_ms(uint32_t period)
     std::this_thread::sleep_for(std::chrono::milliseconds(period));
 }
 
-/**\name Internal macros */
-/* To identify osr settings selected by user */
-#define OVERSAMPLING_SETTINGS		UINT8_C(0x07)
-/* To identify filter and standby settings selected by user */
-#define FILTER_STANDBY_SETTINGS		UINT8_C(0x18)
-
-
 /****************** Global Function Definitions *******************************/
 
 /*!
