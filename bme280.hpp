@@ -259,11 +259,11 @@ public:
     * @retval zero -> Success / -ve value -> Error
     */
     int8_t compensate_data(uint8_t sensor_comp);
+
+private:
     IO* m_IO{nullptr};
     /*! Sensor settings */
 	settings m_settings;
-private:
-    
     /*! Chip Id */
 	uint8_t m_chip_id;
     data m_data;
