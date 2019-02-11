@@ -30,16 +30,4 @@ int main(int argc, char* argv[])
       bme280s[sensor].init();
       print_sensor_data(bme280s[sensor].getDataForcedMode());
   }
- // I2C i2c(argv[1],"0x76");
- // I2C i2c2(argv[1],"0x77");
-
-  //i2c.connect();
-  //i2c2.connect();
- // bme280 bm(i2c,setting);
- // bme280 bm2(i2c2,setting);
- // int8_t rslt;
- // rslt = bm.init();
- // rslt = bm2.init();
- // print_sensor_data(bm.getDataForcedMode());
- // print_sensor_data(bm2.getDataForcedMode());
-}
+ }
