@@ -7,29 +7,13 @@
 #include "bme280.hpp"
 #include "I2C.hpp"
 
-void print_sensor_data(data& dat)
+void print_sensor_data(const data& dat)
 {
 #ifdef BME280_FLOAT_ENABLE
   printf("temp %0.2f, p %0.2f, hum %0.2f\r\n",dat.getTemperature(), dat.getPressure(), dat.getHumidity());
 #else
   printf("temp %ld, p %ld, hum %ld\r\n",dat.getTemperature(),dat.getPressure(),dat.getHumidity());
 #endif
-}
-
-int8_t stream_sensor_data_forced_mode(bme280& bm)
-{
-  int8_t rslt;
-  uint8_t settings_sel;
-  settings_sel = OSR_PRESS_SEL | OSR_TEMP_SEL | OSR_HUM_SEL | FILTER_SEL;
-  rslt = bm.set_sensor_settings(settings_sel);
-  printf("Temperature, Pressure, Humidity\r\n");
-  /* Continuously stream sensor data */
-rslt = bm.set_sensor_mode(FORCED_MODE);
-    /* Wait for the measurement to complete and print data @25Hz */
-bm.delay_ms(40);
-    rslt = bm.get_sensor_data(ALL);
-    print_sensor_data(bm.getData());
-  return rslt;
 }
 
 int main(int argc, char* argv[])
@@ -48,6 +32,6 @@ int main(int argc, char* argv[])
   int8_t rslt;
   rslt = bm.init();
   rslt = bm2.init();
-  stream_sensor_data_forced_mode(bm);
-  stream_sensor_data_forced_mode(bm2);
+  print_sensor_data(bm.getDataForcedMode());
+  print_sensor_data(bm2.getDataForcedMode());
 }

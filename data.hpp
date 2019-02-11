@@ -31,28 +31,28 @@ public:
         m_humidity={0};
     }
         #ifdef BME280_FLOAT_ENABLE
-    double getTemperature()
+    double getTemperature() const
     {
         return m_temperature;
     }
-    double getPressure()
+    double getPressure() const
     {
         return m_pressure;
     }
-    double getHumidity()
+    double getHumidity() const 
     {
         return m_humidity;
     }
     #else
-    uint32_t getTemperature()
+    uint32_t getTemperature() const 
     {
         return m_temperature;
     }
-    uint32_t getPressure()
+    uint32_t getPressure() const 
     {
         return m_pressure;
     }
-    uint32_t getHumidity()
+    uint32_t getHumidity() const 
     {
         return m_humidity;
     }

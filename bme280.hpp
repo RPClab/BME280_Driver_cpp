@@ -259,7 +259,20 @@ public:
     * @retval zero -> Success / -ve value -> Error
     */
     int8_t compensate_data(uint8_t sensor_comp);
-
+    
+    data getDataForcedMode()
+    {
+        int8_t rslt;
+        uint8_t settings_sel = OSR_PRESS_SEL | OSR_TEMP_SEL | OSR_HUM_SEL | FILTER_SEL;
+        rslt = set_sensor_settings(settings_sel);
+        /* Continuously stream sensor data */
+        rslt = set_sensor_mode(FORCED_MODE);
+        /* Wait for the measurement to complete and print data @25Hz */
+        delay_ms(40);
+        rslt = get_sensor_data(ALL);
+        return getData();
+    }
+    
 private:
     IO* m_IO{nullptr};
     /*! Sensor settings */
